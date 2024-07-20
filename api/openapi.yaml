@@ -1,0 +1,5542 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: hello@permify.co
+    name: API Support
+    url: https://github.com/Permify/permify/issues
+  description: Permify is an open source authorization service for creating fine-grained
+    and scalable authorization systems.
+  license:
+    name: Apache-2.0 license
+    url: https://github.com/Permify/permify/blob/master/LICENSE
+  title: Permify API
+  version: v0.9.9
+servers:
+- url: /
+tags:
+- name: Permission
+- name: Watch
+- name: Schema
+- name: Data
+- name: Bundle
+- name: Tenancy
+paths:
+  /v1/tenants/create:
+    post:
+      operationId: tenants.create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+        description: TenantCreateRequest is the message used for the request to create
+          a tenant.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantCreateResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: create tenant
+      tags:
+      - Tenancy
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Tenancy.Create(context.Background(), &v1.TenantCreateRequest {
+              Id: ""
+              Name: ""
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.tenancy.create({
+             id: "",
+             name: ""
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'http://localhost:3476/v1/tenants/create' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "id": "",
+              "name": ""
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/list:
+    post:
+      operationId: tenants.list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantListRequest'
+        description: TenantListRequest is the message used for the request to list
+          all tenants.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantListResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: list tenants
+      tags:
+      - Tenancy
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err := client.Tenancy.List(context.Background(), &v1.TenantListRequest{
+              PageSize: 20,
+              ContinuousToken: "",
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          let res = client.tenancy.list({
+              pageSize: 20,
+              continuousToken: "",
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/list' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "page_size": "10",
+              "continuous_token": ""
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{id}:
+    delete:
+      operationId: tenants.delete
+      parameters:
+      - description: id is the unique identifier of the tenant to be deleted.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantDeleteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: delete tenant
+      tags:
+      - Tenancy
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Tenancy.Delete(context.Background(), &v1.TenantDeleteRequest {
+              Id: ""
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.tenancy.delete({
+             id: "",
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: curl --location --request DELETE 'http://localhost:3476/v1/tenants/t1'
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/bundle/delete:
+    post:
+      operationId: bundle.delete
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bundle_delete_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundleDeleteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: delete bundle
+      tags:
+      - Bundle
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Bundle.Delete(context.Background(), &v1.BundleDeleteRequest{
+              TenantId: "t1",
+              Name:     "organization_created",
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.bundle.delete({
+              tenantId: "t1",
+              name: "organization_created",
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/bundle/delete' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "name": "organization_created",
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/bundle/read:
+    post:
+      operationId: bundle.read
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bundle_read_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundleReadResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: read bundle
+      tags:
+      - Bundle
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Bundle.Read(context.Background(), &v1.BundleReadRequest{
+              TenantId: "t1",
+              Name:     "organization_created",
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.bundle.read({
+              tenantId: "t1",
+              name: "organization_created",
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/bundle/read' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "name": "organization_created",
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/bundle/write:
+    post:
+      operationId: bundle.write
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bundle_write_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundleWriteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: write bundle
+      tags:
+      - Bundle
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err := client.Bundle.Write(context.Background(), &v1.BundleWriteRequest{
+              TenantId: "t1",
+              Bundles: []*v1.DataBundle{
+                  {
+                      Name: "organization_created",
+                      Arguments: []string{
+                          "creatorID",
+                          "organizationID",
+                      },
+                      Operations: []*v1.Operation{
+                          {
+                              RelationshipsWrite: []string{
+                                  "organization:{{.organizationID}}#admin@user:{{.creatorID}}",
+                                  "organization:{{.organizationID}}#manager@user:{{.creatorID}}",
+                              },
+                              AttributesWrite: []string{
+                                  "organization:{{.organizationID}}$public|boolean:false",
+                              },
+                          },
+                      },
+                  },
+              },
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.bundle.write({
+              tenantId: "t1",
+              bundles: [
+                  {
+                      name: "organization_created",
+                      arguments: [
+                          "creatorID",
+                          "organizationID",
+                      ],
+                      operations: [
+                          {
+                              relationships_write: [
+                                  "organization:{{.organizationID}}#admin@user:{{.creatorID}}",
+                                  "organization:{{.organizationID}}#manager@user:{{.creatorID}}",
+                              ],
+                              attributes_write: [
+                                  "organization:{{.organizationID}}$public|boolean:false",
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/bundle/write' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "bundles": [
+                  {
+                      "name": "organization_created"
+                      "arguments": [
+                          "creatorID",
+                          "organizationID"
+                      ],
+                      "operations": [
+                          {
+                              "relationships_write": [
+                                  "organization:{{.organizationID}}#admin@user:{{.creatorID}}",
+                                  "organization:{{.organizationID}}#manager@user:{{.creatorID}}",
+                              ],
+                              "attributes_write": [
+                                  "organization:{{.organizationID}}$public|boolean:false",
+                              ],
+                          },
+                      ],
+                  },
+              ],
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/data/attributes/read:
+    post:
+      operationId: data.attributes.read
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/data_attributes_read_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeReadResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: read attributes
+      tags:
+      - Data
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Data.ReadAttributes(context.Background(), & v1.Data.AttributeReadRequest {
+              TenantId: "t1",
+              Metadata: &v1.Data.AttributeReadRequestMetadata {
+                  SnapToken: ""
+              },
+              Filter: &v1.AttributeFilter {
+                  Entity: &v1.EntityFilter {
+                  Type: "organization",
+                  Ids: []string {"1"} ,
+              },
+              Attributes: []string {"private"},
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.data.readAttributes({
+            tenantId: "t1",
+            metadata: {
+               snap_token: "",
+            },
+            filter: {
+              entity: {
+                type: "organization",
+                ids: [
+                  "1"
+                ]
+              },
+              attributes: [
+                  "private"
+              ],
+            }
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/attributes/read' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            metadata: {
+               snap_token: "",
+            },
+            filter: {
+              entity: {
+                type: "organization",
+                ids: [
+                  "1"
+                ]
+              },
+              attributes: [
+                  "private"
+                ],
+            }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/data/delete:
+    post:
+      operationId: data.delete
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/data_delete_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataDeleteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: delete data
+      tags:
+      - Data
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Data.Delete(context.Background(), & v1.DataDeleteRequest {
+              TenantId: "t1",
+              Metadata: &v1.DataDeleteRequestMetadata {
+                  SnapToken: ""
+              },
+              TupleFilter: &v1.TupleFilter {
+                  Entity: &v1.EntityFilter {
+                  Type: "organization",
+                  Ids: []string {"1"} ,
+              },
+              Relation: "admin",
+              Subject: &v1.SubjectFilter {
+                  Type: "user",
+                  Id: []string {"1"},
+                  Relation: ""
+              }}
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.data.delete({
+            tenantId: "t1",
+            metadata: {
+               snap_token: "",
+            },
+            tupleFilter: {
+              entity: {
+                type: "organization",
+                ids: [
+                  "1"
+                ]
+              },
+              relation: "admin",
+              subject: {
+                type: "user",
+                ids: [
+                  "1"
+                ],
+                relation: ""
+              }
+            }
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/delete' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "tupleFilter": {
+              "entity": {
+                "type": "organization",
+                "ids": [
+                  "1"
+                ]
+              },
+              "relation": "admin",
+              "subject": {
+                "type": "user",
+                "ids": [
+                  "1"
+                ],
+                "relation": ""
+              }
+            },
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/data/relationships/read:
+    post:
+      operationId: data.relationships.read
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/data_relationships_read_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipReadResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: read relationships
+      tags:
+      - Data
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Data.ReadRelationships(context.Background(), & v1.Data.RelationshipReadRequest {
+              TenantId: "t1",
+              Metadata: &v1.Data.RelationshipReadRequestMetadata {
+                  SnapToken: ""
+              },
+              Filter: &v1.TupleFilter {
+                  Entity: &v1.EntityFilter {
+                  Type: "organization",
+                  Ids: []string {"1"} ,
+              },
+              Relation: "member",
+              Subject: &v1.SubjectFilter {
+                  Type: "",
+                  Id: []string {""},
+                  Relation: ""
+              }}
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.data.readRelationships({
+            tenantId: "t1",
+            metadata: {
+               snap_token: "",
+            },
+            filter: {
+              entity: {
+                type: "organization",
+                ids: [
+                  "1"
+                ]
+              },
+              relation: "member",
+              subject: {
+                type: "",
+                ids: [],
+                relation: ""
+              }
+            }
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/relationships/read' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            metadata: {
+               snap_token: "",
+            },
+            filter: {
+              entity: {
+                type: "organization",
+                ids: [
+                  "1"
+                ]
+              },
+              relation: "member",
+              subject: {
+                type: "",
+                ids: [],
+                relation: ""
+              }
+            }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/data/run-bundle:
+    post:
+      operationId: bundle.run
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bundle_run_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BundleRunResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: run bundle
+      tags:
+      - Data
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          rr, err: = client.Data.RunBundle(context.Background(), &v1.BundleRunRequest{
+              TenantId: "t1",
+              Name:     "organization_created",
+              Arguments: map[string]string{
+                  "creatorID":      "564",
+                  "organizationID": "789",
+              },
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.data.runBundle({
+              tenantId: "t1",
+              name: "organization_created",
+              arguments: {
+                  creatorID: "564",
+                  organizationID: "789",
+              }
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/run-bundle' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "name": "organization_created",
+              "arguments": {
+                  "creatorID": "564",
+                  "organizationID": "789",
+              }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/data/write:
+    post:
+      operationId: data.write
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/data_write_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataWriteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: write data
+      tags:
+      - Data
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          // Convert the wrapped attribute value into Any proto message
+          value, err := anypb.New(&v1.BooleanValue{
+              Data: true,
+          })
+          if err != nil {
+              // Handle error
+          }
+
+          cr, err := client.Data.Write(context.Background(), &v1.DataWriteRequest{
+              TenantId: "t1",,
+              Metadata: &v1.DataWriteRequestMetadata{
+                  SchemaVersion: "",
+              },
+              Tuples: []*v1.Attribute{
+                  {
+                      Entity: &v1.Entity{
+                          Type: "document",
+                          Id:   "1",
+                      },
+                      Relation: "editor",
+                      Subject:  &v1.Subject{
+                          Type: "user",
+                          Id:   "1",
+                          Relation: "",
+                      },
+                  },
+              },
+              Attributes: []*v1.Attribute{
+                  {
+                      Entity: &v1.Entity{
+                          Type: "document",
+                          Id:   "1",
+                      },
+                      Attribute: "is_private",
+                      Value:     value,
+                  },
+              },
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          const booleanValue = BooleanValue.fromJSON({ data: true });
+
+          const value = Any.fromJSON({
+              typeUrl: 'type.googleapis.com/base.v1.BooleanValue',
+              value: BooleanValue.encode(booleanValue).finish()
+          });
+
+          client.data.write({
+              tenantId: "t1",
+              metadata: {
+                  schemaVersion: ""
+              },
+              tuples: [{
+                  entity: {
+                      type: "document",
+                      id: "1"
+                  },
+                  relation: "editor",
+                  subject: {
+                      type: "user",
+                      id: "1"
+                  }
+              }],
+              attributes: [{
+                  entity: {
+                      type: "document",
+                      id: "1"
+                  },
+                  attribute: "is_private",
+                  value: value,
+              }]
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/write' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+          {
+              "metadata": {
+                  "schema_version": ""
+              },
+              "tuples": [
+                {
+                  "entity": {
+                    "type": "document",
+                    "id": "1"
+                  },
+                  "relation": "editor",
+                  "subject": {
+                    "type": "user",
+                    "id": "1"
+                  }
+              }
+              ],
+              "attributes": [
+                  {
+                      "entity": {
+                          "type": "document",
+                          "id": "1"
+                      },
+                      "attribute": "is_private",
+                      "value": {
+                          "@type": "type.googleapis.com/base.v1.BooleanValue",
+                          "data": true
+                      }
+                  }
+              ]
+          }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/check:
+    post:
+      operationId: permissions.check
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_check_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionCheckResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: check api
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err := client.Permission.Check(context.Background(), &v1.PermissionCheckRequest {
+              TenantId: "t1",
+              Metadata: &v1.PermissionCheckRequestMetadata {
+                  SnapToken: "",
+                  SchemaVersion: "",
+                  Depth: 20,
+              },
+              Entity: &v1.Entity {
+                  Type: "repository",
+                  Id: "1",
+              },
+              Permission: "edit",
+              Subject: &v1.Subject {
+                  Type: "user",
+                  Id: "1",
+              },
+
+              if (cr.can === PermissionCheckResponse_Result.RESULT_ALLOWED) {
+                  // RESULT_ALLOWED
+              } else {
+                  // RESULT_DENIED
+              }
+          })
+      - label: node
+        lang: javascript
+        source: "client.permission.check({\n    tenantId: \"t1\", \n    metadata:\
+          \ {\n        snapToken: \"\",\n        schemaVersion: \"\",\n        depth:\
+          \ 20\n    },\n    entity: {\n        type: \"repository\",\n        id:\
+          \ \"1\"\n    },\n    permission: \"edit\",\n    subject: {\n        type:\
+          \ \"user\",\n        id: \"1\"\n    }\n}).then((response) => {\n    if (response.can\
+          \ === PermissionCheckResponse_Result.RESULT_ALLOWED) {\n        console.log(\"\
+          RESULT_ALLOWED\")\n    } else {\n        console.log(\"RESULT_DENIED\")\n\
+          \    }\n})"
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/check' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "metadata":{
+              "snap_token": "",
+              "schema_version": "",
+              "depth": 20
+            },
+            "entity": {
+              "type": "repository",
+              "id": "1"
+            },
+            "permission": "edit",
+            "subject": {
+              "type": "user",
+              "id": "1",
+              "relation": ""
+            },
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/expand:
+    post:
+      operationId: permissions.expand
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_expand_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionExpandResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: expand api
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err: = client.Permission.Expand(context.Background(), &v1.PermissionExpandRequest{
+              TenantId: "t1",
+              Metadata: &v1.PermissionExpandRequestMetadata{
+                  SnapToken: "",
+                  SchemaVersion: "",
+              },
+              Entity: &v1.Entity{
+                  Type: "repository",
+                  Id: "1",
+              },
+              Permission: "push",
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.permission.expand({
+            tenantId: "t1",
+            metadata: {
+                  snapToken: "",
+                  schemaVersion: ""
+              },
+              entity: {
+                  type: "repository",
+                  id: "1"
+              },
+              permission: "push",
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/expand' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "metadata": {
+              "schema_version": "",
+              "snap_token": ""
+            },
+            "entity": {
+              "type": "repository",
+              "id": "1"
+            },
+            "permission": "push"
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/lookup-entity:
+    post:
+      operationId: permissions.lookupEntity
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_lookupEntity_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionLookupEntityResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: lookup entity
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err: = client.Permission.LookupEntity(context.Background(), & v1.PermissionLookupEntityRequest {
+              TenantId: "t1",
+              Metadata: & v1.PermissionLookupEntityRequestMetadata {
+                  SnapToken: ""
+                  SchemaVersion: ""
+                  Depth: 20,
+              },
+              EntityType: "document",
+              Permission: "edit",
+              Subject: & v1.Subject {
+                  Type: "user",
+                  Id: "1",
+              }
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.permission.lookupEntity({
+              tenantId: "t1",
+              metadata: {
+                  snapToken: "",
+                  schemaVersion: "",
+                  depth: 20
+              },
+              entity_type: "document",
+              permission: "edit",
+              subject: {
+                  type: "user",
+                  id: "1"
+              }
+          }).then((response) => {
+              console.log(response.entity_ids)
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/lookup-entity' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "metadata":{
+              "snap_token": "",
+              "schema_version": "",
+              "depth": 20
+            },
+            "entity_type": "document",
+            "permission": "edit",
+            "subject": {
+              "type":"user",
+              "id":"1"
+            }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/lookup-entity-stream:
+    post:
+      operationId: permissions.lookupEntityStream
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_lookupEntity_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_PermissionLookupEntityStreamResponse'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: lookup entity stream
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: "str, err: = client.Permission.LookupEntityStream(context.Background(),\
+          \ &v1.PermissionLookupEntityRequest {\n    Metadata: &v1.PermissionLookupEntityRequestMetadata\
+          \ {\n        SnapToken: \"\", \n        SchemaVersion: \"\" \n        Depth:\
+          \ 50,\n    },\n    EntityType: \"document\",\n    Permission: \"view\",\n\
+          \    Subject: &v1.Subject {\n        Type: \"user\",\n        Id: \"1\"\
+          ,\n    },\n})\n\n// handle stream response\nfor {\n    res, err: = str.Recv()\n\
+          \n    if err == io.EOF {\n        break\n    }\n\n    // res.EntityId\n}"
+      - label: node
+        lang: javascript
+        source: |-
+          const permify = require("@permify/permify-node");
+          const {PermissionLookupEntityStreamResponse} = require("@permify/permify-node/dist/src/grpc/generated/base/v1/service");
+
+          function main() {
+              const client = new permify.grpc.newClient({
+                  endpoint: "localhost:3478",
+              })
+
+              let res = client.permission.lookupEntityStream({
+                  metadata: {
+                      snapToken: "",
+                      schemaVersion: "",
+                      depth: 20
+                  },
+                  entityType: "document",
+                  permission: "view",
+                  subject: {
+                      type: "user",
+                      id: "1"
+                  }
+              })
+
+              handle(res)
+          }
+
+          async function handle(res: AsyncIterable<PermissionLookupEntityStreamResponse>) {
+              for await (const response of res) {
+                  // response.entityId
+              }
+          }
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/lookup-subject:
+    post:
+      operationId: permissions.lookupSubject
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_lookupSubject_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionLookupSubjectResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: lookup-subject
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err: = client.Permission.LookupSubject(context.Background(), &v1.PermissionLookupSubjectRequest {
+              TenantId: "t1",
+              Metadata: &v1.PermissionLookupSubjectRequestMetadata{
+                  SnapToken: "",
+                  SchemaVersion: "",
+                  Depth: 20,
+              },
+              Entity: &v1.Entity{
+                  Type: "document",
+                  Id: "1",
+              },
+              Permission: "edit",
+              SubjectReference: &v1.RelationReference{
+                  Type: "user",
+                  Relation: "",
+              }
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.permission.lookupSubject({
+              tenantId: "t1",
+              metadata: {
+                  snapToken: "",
+                  schemaVersion: ""
+                  depth: 20,
+              },
+              Entity: {
+                  Type: "document",
+                  Id: "1",
+              },
+              permission: "edit",
+              subject_reference: {
+                  type: "user",
+                  relation: ""
+              }
+          }).then((response) => {
+              console.log(response.subject_ids)
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/lookup-subject' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "metadata":{
+              "snap_token": "",
+              "schema_version": ""
+              "depth": 20,
+            },
+            "entity": {
+              type: "document",
+              id: "1'
+            },
+            "permission": "edit",
+            "subject_reference": {
+              "type": "user",
+              "relation": ""
+            }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/permissions/subject-permission:
+    post:
+      operationId: permissions.subjectPermission
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/permissions_subjectPermission_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionSubjectPermissionResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: subject permission
+      tags:
+      - Permission
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          cr, err: = client.Permission.SubjectPermission(context.Background(), &v1.PermissionSubjectPermissionRequest {
+              TenantId: "t1",
+              Metadata: &v1.PermissionSubjectPermissionRequestMetadata {
+                  SnapToken: "",
+                  SchemaVersion: "",
+                  OnlyPermission: false,
+                  Depth: 20,
+              },
+              Entity: &v1.Entity {
+                  Type: "repository",
+                  Id: "1",
+              },
+              Subject: &v1.Subject {
+                  Type: "user",
+                  Id: "1",
+              },
+          })
+      - label: node
+        lang: javascript
+        source: "client.permission.subjectPermission({\n    tenantId: \"t1\", \n \
+          \   metadata: {\n        snapToken: \"\",\n        schemaVersion: \"\",\n\
+          \        onlyPermission: true,\n        depth: 20\n    },\n    entity: {\n\
+          \        type: \"repository\",\n        id: \"1\"\n    },\n    subject:\
+          \ {\n        type: \"user\",\n        id: \"1\"\n    }\n}).then((response)\
+          \ => {\n    console.log(response);\n})"
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/subject-permission' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "metadata":{
+              "snap_token": "",
+              "schema_version": "",
+              "only_permission": true,
+              "depth": 20
+            },
+            "entity": {
+              "type": "repository",
+              "id": "1"
+            },
+            "subject": {
+              "type": "user",
+              "id": "1",
+              "relation": ""
+            },
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/relationships/delete:
+    post:
+      operationId: relationships.delete
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelationshipDeleteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipDeleteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: delete relationships
+      tags:
+      - Data
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/relationships/write:
+    post:
+      operationId: relationships.write
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/relationships_write_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipWriteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: write relationships
+      tags:
+      - Data
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/schemas/list:
+    post:
+      operationId: schemas.list
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schemas_list_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaListResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: list schema
+      tags:
+      - Schema
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          sr, err: = client.Schema.List(context.Background(), &v1.SchemaListRequest {
+              TenantId: "t1",
+              PageSize: "10",
+              ContinuousToken: "",
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          let res = client.schema.list({
+              tenantId: "t1",
+              continuousToken: ""
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/schemas/read' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "page_size": "10",
+              "continuous_token": ""
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/schemas/partial-write:
+    patch:
+      operationId: schemas.partial-write
+      parameters:
+      - description: |-
+          tenant_id is a string that identifies the tenant. It must match the pattern "[a-zA-Z0-9-,]+",
+          be a maximum of 64 bytes, and must not be empty.
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/It_contains_the_tenant_id_to_identify_the_tenant_and_metadata_of_the_schema_to_be_edited__with_the_corresponding_edits_to_various_entities'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaPartialWriteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: partially update your authorization model
+      tags:
+      - Schema
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/schemas/read:
+    post:
+      operationId: schemas.read
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schemas_read_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaReadResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: read schema
+      tags:
+      - Schema
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          sr, err: = client.Schema.Read(context.Background(), &v1.SchemaReadRequest {
+              TenantId: "t1",
+              Metadata: &v1.SchemaReadRequestMetadata{
+                  SchemaVersion: "cnbe6se5fmal18gpc66g",
+              },
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          let res = client.schema.read({
+              tenantId: "t1",
+              metadata: {
+              schemaVersion: swResponse.schemaVersion,
+              },
+              })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/schemas/read' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "metadata": {
+                  "schema_version": "cnbe6se5fmal18gpc66g"
+              }
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/schemas/write:
+    post:
+      operationId: schemas.write
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/schemas_write_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaWriteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: write schema
+      tags:
+      - Schema
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |-
+          sr, err: = client.Schema.Write(context.Background(), &v1.SchemaWriteRequest {
+              TenantId: "t1",
+              Schema: `
+              "entity user {}\n\n    entity organization {\n\n        relation admin @user\n        relation member @user\n\n        action create_repository = (admin or member)\n        action delete = admin\n    }\n\n    entity repository {\n\n        relation owner @user\n        relation parent @organization\n\n        action push = owner\n        action read = (owner and (parent.admin and parent.member))\n        action delete = (parent.member and (parent.admin or owner))\n    }"
+              `,
+          })
+      - label: node
+        lang: javascript
+        source: |-
+          client.schema.write({
+              tenantId: "t1",
+              schema: `
+              "entity user {}\n\n    entity organization {\n\n        relation admin @user\n        relation member @user\n\n        action create_repository = (admin or member)\n        action delete = admin\n    }\n\n    entity repository {\n\n        relation owner @user\n        relation parent @organization\n\n        action push = owner\n        action read = (owner and (parent.admin and parent.member))\n        action delete = (parent.member and (parent.admin or owner))\n    }"
+              `
+          }).then((response) => {
+              // handle response
+          })
+      - label: cURL
+        lang: curl
+        source: |-
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/schemas/write' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "schema": "entity user {}\n\n    entity organization {\n\n        relation admin @user\n        relation member @user\n\n        action create_repository = (admin or member)\n        action delete = admin\n    }\n\n    entity repository {\n\n        relation owner @user\n        relation parent @organization\n\n        action push = owner\n        action read = (owner and (parent.admin and parent.member))\n        action delete = (parent.member and (parent.admin or owner))\n }"
+          }'
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+  /v1/tenants/{tenant_id}/watch:
+    post:
+      operationId: watch.watch
+      parameters:
+      - description: "Identifier of the tenant, if you are not using multi-tenancy\
+          \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
+          \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
+          \ 64 bytes."
+        in: path
+        name: tenant_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/watch_watch_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream_result_of_WatchResponse'
+          description: A successful response.(streaming responses)
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: watch changes
+      tags:
+      - Watch
+      x-codeSamples:
+      - label: go
+        lang: go
+        source: |
+          cr, err := client.Watch.Watch(context.Background(), &v1.WatchRequest{
+              TenantId:  "t1",
+              SnapToken: "",
+          })
+          // handle stream response
+          for {
+              res, err := cr.Recv()
+
+              if err == io.EOF {
+                  break
+              }
+
+              // res.Changes
+          }
+      - label: node
+        lang: javascript
+        source: |
+          const permify = require("@permify/permify-node");
+          const {WatchResponse} = require("@permify/permify-node/dist/src/grpc/generated/base/v1/service");
+
+          function main() {
+              const client = new permify.grpc.newClient({
+                  endpoint: "localhost:3478",
+              })
+
+              let res = client.watch.watch({
+                    tenantId: "t1",
+                  snapToken: ""
+              })
+
+              handle(res)
+          }
+
+          async function handle(res: AsyncIterable<WatchResponse>) {
+              for await (const response of res) {
+                  // response.changes
+              }
+          }
+      x-codegen-request-body-name: body
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    AbstractType:
+      description: Application defined abstract type.
+      example:
+        parameterTypes:
+        - null
+        - null
+        name: name
+      properties:
+        name:
+          description: The fully qualified name of this abstract type.
+          type: string
+        parameterTypes:
+          description: Parameter types for this abstract type.
+          items:
+            $ref: '#/components/schemas/v1alpha1.Type'
+          type: array
+      type: object
+    Any:
+      additionalProperties:
+        type: object
+      description: |-
+        `Any` contains an arbitrary serialized protocol buffer message along with a
+        URL that describes the type of the serialized message.
+
+        Protobuf library provides support to pack/unpack Any values in the form
+        of utility functions or additional generated methods of the Any type.
+
+        Example 1: Pack and unpack a message in C++.
+
+            Foo foo = ...;
+            Any any;
+            any.PackFrom(foo);
+            ...
+            if (any.UnpackTo(&foo)) {
+              ...
+            }
+
+        Example 2: Pack and unpack a message in Java.
+
+            Foo foo = ...;
+            Any any = Any.pack(foo);
+            ...
+            if (any.is(Foo.class)) {
+              foo = any.unpack(Foo.class);
+            }
+            // or ...
+            if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+              foo = any.unpack(Foo.getDefaultInstance());
+            }
+
+         Example 3: Pack and unpack a message in Python.
+
+            foo = Foo(...)
+            any = Any()
+            any.Pack(foo)
+            ...
+            if any.Is(Foo.DESCRIPTOR):
+              any.Unpack(foo)
+              ...
+
+         Example 4: Pack and unpack a message in Go
+
+             foo := &pb.Foo{...}
+             any, err := anypb.New(foo)
+             if err != nil {
+               ...
+             }
+             ...
+             foo := &pb.Foo{}
+             if err := any.UnmarshalTo(foo); err != nil {
+               ...
+             }
+
+        The pack methods provided by protobuf library will by default use
+        'type.googleapis.com/full.type.name' as the type URL and the unpack
+        methods only use the fully qualified type name after the last '/'
+        in the type URL, for example "foo.bar.com/x/y.z" will yield type
+        name "y.z".
+
+        JSON
+        ====
+        The JSON representation of an `Any` value uses the regular
+        representation of the deserialized, embedded message, with an
+        additional field `@type` which contains the type URL. Example:
+
+            package google.profile;
+            message Person {
+              string first_name = 1;
+              string last_name = 2;
+            }
+
+            {
+              "@type": "type.googleapis.com/google.profile.Person",
+              "firstName": <string>,
+              "lastName": <string>
+            }
+
+        If the embedded message type is well-known and has a custom JSON
+        representation, that representation will be embedded adding a field
+        `value` which holds the custom JSON in addition to the `@type`
+        field. Example (for message [google.protobuf.Duration][]):
+
+            {
+              "@type": "type.googleapis.com/google.protobuf.Duration",
+              "value": "1.212s"
+            }
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          description: |-
+            A URL/resource name that uniquely identifies the type of the serialized
+            protocol buffer message. This string must contain at least
+            one "/" character. The last segment of the URL's path must represent
+            the fully qualified name of the type (as in
+            `path/google.protobuf.Duration`). The name should be in a canonical form
+            (e.g., leading "." is not accepted).
+
+            In practice, teams usually precompile into the binary all types that they
+            expect it to use in the context of Any. However, for URLs which use the
+            scheme `http`, `https`, or no scheme, one can optionally set up a type
+            server that maps type URLs to message definitions as follows:
+
+            * If no scheme is provided, `https` is assumed.
+            * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+              value in binary format, or produce an error.
+            * Applications are allowed to cache lookup results based on the
+              URL, or have them precompiled into a binary to avoid any
+              lookup. Therefore, binary compatibility needs to be preserved
+              on changes to types. (Use versioned type names to manage
+              breaking changes.)
+
+            Note: this functionality is not currently available in the official
+            protobuf release, and it is not used for type URLs beginning with
+            type.googleapis.com. As of May 2023, there are no widely used type server
+            implementations and no plans to implement one.
+
+            Schemes other than `http`, `https` (or the empty scheme) might be
+            used with implementation specific semantics.
+          type: string
+      type: object
+    Argument:
+      description: Argument defines the type of argument in a Call. It can be either
+        a ComputedAttribute or a ContextAttribute.
+      example:
+        computedAttribute:
+          name: name
+        contextAttribute:
+          name: name
+      properties:
+        computedAttribute:
+          $ref: '#/components/schemas/ComputedAttribute'
+        contextAttribute:
+          $ref: '#/components/schemas/ContextAttribute'
+      type: object
+    Attribute:
+      description: Attribute represents an attribute of an entity with a specific
+        type and value.
+      example:
+        attribute: attribute
+        value:
+          '@type': '@type'
+        entity:
+          id: id
+          type: type
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        attribute:
+          title: Name of the attribute
+          type: string
+        value:
+          $ref: '#/components/schemas/Any'
+      type: object
+    AttributeDefinition:
+      description: The AttributeDefinition message provides detailed information about
+        a specific attribute.
+      example:
+        name: name
+        type: ATTRIBUTE_TYPE_UNSPECIFIED
+      properties:
+        name:
+          description: "The name of the attribute, which follows a specific string\
+            \ pattern and has a maximum byte size."
+          type: string
+        type:
+          $ref: '#/components/schemas/AttributeType'
+      type: object
+    AttributeFilter:
+      description: AttributeFilter is used to filter attributes based on the entity
+        and attribute names.
+      properties:
+        entity:
+          $ref: '#/components/schemas/EntityFilter'
+        attributes:
+          items:
+            type: string
+          title: Names of the attributes to be filtered
+          type: array
+      type: object
+    AttributeReadRequestMetadata:
+      description: |-
+        AttributeReadRequestMetadata defines the structure for the metadata of an attribute read request.
+        It includes the snap_token associated with a particular state of the database.
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      type: object
+    AttributeReadResponse:
+      description: |-
+        AttributeReadResponse defines the structure of the response to an attribute read request.
+        It includes the attributes retrieved and a continuous token for handling result pagination.
+      example:
+        continuous_token: continuous_token
+        attributes:
+        - attribute: attribute
+          value:
+            '@type': '@type'
+          entity:
+            id: id
+            type: type
+        - attribute: attribute
+          value:
+            '@type': '@type'
+          entity:
+            id: id
+            type: type
+      properties:
+        attributes:
+          description: attributes is a list of the attributes retrieved in the read
+            operation.
+          items:
+            $ref: '#/components/schemas/Attribute'
+          type: array
+        continuous_token:
+          description: continuous_token is used in the case of paginated reads to
+            retrieve the next page of results.
+          type: string
+      type: object
+    AttributeType:
+      description: |-
+        Enumerates the types of attribute.
+
+         - ATTRIBUTE_TYPE_UNSPECIFIED: Not specified attribute type. This is the default value.
+         - ATTRIBUTE_TYPE_BOOLEAN: A boolean attribute type.
+         - ATTRIBUTE_TYPE_BOOLEAN_ARRAY: A boolean array attribute type.
+         - ATTRIBUTE_TYPE_STRING: A string attribute type.
+         - ATTRIBUTE_TYPE_STRING_ARRAY: A string array attribute type.
+         - ATTRIBUTE_TYPE_INTEGER: An integer attribute type.
+         - ATTRIBUTE_TYPE_INTEGER_ARRAY: An integer array attribute type.
+         - ATTRIBUTE_TYPE_DOUBLE: A double attribute type.
+         - ATTRIBUTE_TYPE_DOUBLE_ARRAY: A double array attribute type.
+      enum:
+      - ATTRIBUTE_TYPE_UNSPECIFIED
+      - ATTRIBUTE_TYPE_BOOLEAN
+      - ATTRIBUTE_TYPE_BOOLEAN_ARRAY
+      - ATTRIBUTE_TYPE_STRING
+      - ATTRIBUTE_TYPE_STRING_ARRAY
+      - ATTRIBUTE_TYPE_INTEGER
+      - ATTRIBUTE_TYPE_INTEGER_ARRAY
+      - ATTRIBUTE_TYPE_DOUBLE
+      - ATTRIBUTE_TYPE_DOUBLE_ARRAY
+      type: string
+    BundleDeleteResponse:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      type: object
+    BundleReadResponse:
+      example:
+        bundle:
+          operations:
+          - attributes_write:
+            - attributes_write
+            - attributes_write
+            relationships_delete:
+            - relationships_delete
+            - relationships_delete
+            relationships_write:
+            - relationships_write
+            - relationships_write
+            attributes_delete:
+            - attributes_delete
+            - attributes_delete
+          - attributes_write:
+            - attributes_write
+            - attributes_write
+            relationships_delete:
+            - relationships_delete
+            - relationships_delete
+            relationships_write:
+            - relationships_write
+            - relationships_write
+            attributes_delete:
+            - attributes_delete
+            - attributes_delete
+          name: name
+          arguments:
+          - arguments
+          - arguments
+      properties:
+        bundle:
+          $ref: '#/components/schemas/DataBundle'
+      type: object
+    BundleRunResponse:
+      description: |-
+        BundleRunResponse is the response for a BundleRunRequest.
+        It includes a snap_token, which may be used for tracking the execution or its results.
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      type: object
+    BundleWriteResponse:
+      description: |-
+        BundleWriteResponse is the response for a BundleWriteRequest.
+        It includes a name which could be used as an identifier or acknowledgment.
+      example:
+        names:
+        - names
+        - names
+      properties:
+        names:
+          description: Identifier or acknowledgment of the written bundle.
+          items:
+            type: string
+          type: array
+      type: object
+    CheckResult:
+      default: CHECK_RESULT_UNSPECIFIED
+      description: |-
+        Enumerates results of a check operation.
+
+         - CHECK_RESULT_UNSPECIFIED: Not specified check result. This is the default value.
+         - CHECK_RESULT_ALLOWED: Represents a successful check (the check allowed the operation).
+         - CHECK_RESULT_DENIED: Represents a failed check (the check denied the operation).
+      enum:
+      - CHECK_RESULT_UNSPECIFIED
+      - CHECK_RESULT_ALLOWED
+      - CHECK_RESULT_DENIED
+      type: string
+    CheckedExpr:
+      description: A CEL expression which has been successfully type checked.
+      example:
+        sourceInfo:
+          syntaxVersion: syntaxVersion
+          location: location
+          lineOffsets:
+          - 6
+          - 6
+          positions:
+            key: 1
+          macroCalls:
+            key:
+              identExpr:
+                name: name
+              selectExpr:
+                field: field
+                testOnly: true
+                operand: null
+              comprehensionExpr:
+                result: null
+                loopCondition: null
+                accuVar: accuVar
+                accuInit: null
+                iterVar: iterVar
+                iterRange: null
+                loopStep: null
+              structExpr:
+                messageName: messageName
+                entries:
+                - fieldKey: fieldKey
+                  mapKey: null
+                  id: id
+                  value: null
+                  optionalEntry: true
+                - fieldKey: fieldKey
+                  mapKey: null
+                  id: id
+                  value: null
+                  optionalEntry: true
+              id: id
+              callExpr:
+                args:
+                - null
+                - null
+                function: function
+                target: null
+              listExpr:
+                elements:
+                - null
+                - null
+                optionalIndices:
+                - 5
+                - 5
+              constExpr:
+                int64Value: int64Value
+                uint64Value: uint64Value
+                stringValue: stringValue
+                durationValue: durationValue
+                timestampValue: 2000-01-23T04:56:07.000+00:00
+                boolValue: true
+                doubleValue: 0.8008281904610115
+                bytesValue: bytesValue
+                nullValue: nullValue
+        typeMap:
+          key:
+            primitive: PRIMITIVE_TYPE_UNSPECIFIED
+            abstractType:
+              parameterTypes:
+              - null
+              - null
+              name: name
+            mapType:
+              valueType: null
+              keyType: null
+            wrapper: null
+            typeParam: typeParam
+            type: null
+            error: "{}"
+            listType:
+              elemType: null
+            wellKnown: WELL_KNOWN_TYPE_UNSPECIFIED
+            "null": "null"
+            messageType: messageType
+            function:
+              argTypes:
+              - null
+              - null
+              resultType: null
+            dyn: "{}"
+        exprVersion: exprVersion
+        referenceMap:
+          key:
+            overloadId:
+            - overloadId
+            - overloadId
+            name: name
+            value:
+              int64Value: int64Value
+              uint64Value: uint64Value
+              stringValue: stringValue
+              durationValue: durationValue
+              timestampValue: 2000-01-23T04:56:07.000+00:00
+              boolValue: true
+              doubleValue: 0.8008281904610115
+              bytesValue: bytesValue
+              nullValue: nullValue
+        expr:
+          identExpr:
+            name: name
+          selectExpr:
+            field: field
+            testOnly: true
+            operand: null
+          comprehensionExpr:
+            result: null
+            loopCondition: null
+            accuVar: accuVar
+            accuInit: null
+            iterVar: iterVar
+            iterRange: null
+            loopStep: null
+          structExpr:
+            messageName: messageName
+            entries:
+            - fieldKey: fieldKey
+              mapKey: null
+              id: id
+              value: null
+              optionalEntry: true
+            - fieldKey: fieldKey
+              mapKey: null
+              id: id
+              value: null
+              optionalEntry: true
+          id: id
+          callExpr:
+            args:
+            - null
+            - null
+            function: function
+            target: null
+          listExpr:
+            elements:
+            - null
+            - null
+            optionalIndices:
+            - 5
+            - 5
+          constExpr:
+            int64Value: int64Value
+            uint64Value: uint64Value
+            stringValue: stringValue
+            durationValue: durationValue
+            timestampValue: 2000-01-23T04:56:07.000+00:00
+            boolValue: true
+            doubleValue: 0.8008281904610115
+            bytesValue: bytesValue
+            nullValue: nullValue
+      properties:
+        referenceMap:
+          additionalProperties:
+            $ref: '#/components/schemas/v1alpha1.Reference'
+          description: |-
+            A map from expression ids to resolved references.
+
+            The following entries are in this table:
+
+            - An Ident or Select expression is represented here if it resolves to a
+              declaration. For instance, if `a.b.c` is represented by
+              `select(select(id(a), b), c)`, and `a.b` resolves to a declaration,
+              while `c` is a field selection, then the reference is attached to the
+              nested select expression (but not to the id or or the outer select).
+              In turn, if `a` resolves to a declaration and `b.c` are field selections,
+              the reference is attached to the ident expression.
+            - Every Call expression has an entry here, identifying the function being
+              called.
+            - Every CreateStruct expression for a message has an entry, identifying
+              the message.
+          type: object
+        typeMap:
+          additionalProperties:
+            $ref: '#/components/schemas/v1alpha1.Type'
+          description: |-
+            A map from expression ids to types.
+
+            Every expression node which has a type different than DYN has a mapping
+            here. If an expression has type DYN, it is omitted from this map to save
+            space.
+          type: object
+        sourceInfo:
+          $ref: '#/components/schemas/SourceInfo'
+        exprVersion:
+          description: |-
+            The expr version indicates the major / minor version number of the `expr`
+            representation.
+
+            The most common reason for a version change will be to indicate to the CEL
+            runtimes that transformations have been performed on the expr during static
+            analysis. In some cases, this will save the runtime the work of applying
+            the same or similar transformations prior to evaluation.
+          type: string
+        expr:
+          $ref: '#/components/schemas/Expr'
+      type: object
+    Child:
+      description: Child represents a node in the permission tree.
+      example:
+        leaf:
+          call:
+            ruleName: ruleName
+            arguments:
+            - computedAttribute:
+                name: name
+              contextAttribute:
+                name: name
+            - computedAttribute:
+                name: name
+              contextAttribute:
+                name: name
+          computedUserSet:
+            relation: relation
+          computedAttribute:
+            name: name
+          tupleToUserSet:
+            computed:
+              relation: relation
+            tupleSet:
+              relation: relation
+        rewrite:
+          rewriteOperation: OPERATION_UNSPECIFIED
+          children:
+          - null
+          - null
+      properties:
+        leaf:
+          $ref: '#/components/schemas/Leaf'
+        rewrite:
+          $ref: '#/components/schemas/Rewrite'
+      type: object
+    Comprehension:
+      description: |-
+        A comprehension expression applied to a list or map.
+
+        Comprehensions are not part of the core syntax, but enabled with macros.
+        A macro matches a specific call signature within a parsed AST and replaces
+        the call with an alternate AST block. Macro expansion happens at parse
+        time.
+
+        The following macros are supported within CEL:
+
+        Aggregate type macros may be applied to all elements in a list or all keys
+        in a map:
+
+        *  `all`, `exists`, `exists_one` -  test a predicate expression against
+           the inputs and return `true` if the predicate is satisfied for all,
+           any, or only one value `list.all(x, x < 10)`.
+        *  `filter` - test a predicate expression against the inputs and return
+           the subset of elements which satisfy the predicate:
+           `payments.filter(p, p > 1000)`.
+        *  `map` - apply an expression to all elements in the input and return the
+           output aggregate type: `[1, 2, 3].map(i, i * i)`.
+
+        The `has(m.x)` macro tests whether the property `x` is present in struct
+        `m`. The semantics of this macro depend on the type of `m`. For proto2
+        messages `has(m.x)` is defined as 'defined, but not set`. For proto3, the
+        macro tests whether the property is set to its default. For map and struct
+        types, the macro tests whether the property `x` is defined on `m`.
+      example:
+        result: null
+        loopCondition: null
+        accuVar: accuVar
+        accuInit: null
+        iterVar: iterVar
+        iterRange: null
+        loopStep: null
+      properties:
+        iterVar:
+          description: The name of the iteration variable.
+          type: string
+        iterRange:
+          $ref: '#/components/schemas/Expr'
+        accuVar:
+          description: The name of the variable used for accumulation of the result.
+          type: string
+        accuInit:
+          $ref: '#/components/schemas/Expr'
+        loopCondition:
+          $ref: '#/components/schemas/Expr'
+        loopStep:
+          $ref: '#/components/schemas/Expr'
+        result:
+          $ref: '#/components/schemas/Expr'
+      type: object
+    ComputedAttribute:
+      description: ComputedAttribute defines a computed attribute which includes its
+        name.
+      example:
+        name: name
+      properties:
+        name:
+          title: Name of the computed attribute
+          type: string
+      type: object
+    ComputedUserSet:
+      description: ComputedUserSet defines a set of computed users which includes
+        the relation name.
+      example:
+        relation: relation
+      properties:
+        relation:
+          title: Relation name
+          type: string
+      type: object
+    Constant:
+      description: |-
+        Represents a primitive literal.
+
+        Named 'Constant' here for backwards compatibility.
+
+        This is similar as the primitives supported in the well-known type
+        `google.protobuf.Value`, but richer so it can represent CEL's full range of
+        primitives.
+
+        Lists and structs are not included as constants as these aggregate types may
+        contain [Expr][google.api.expr.v1alpha1.Expr] elements which require evaluation and are thus not constant.
+
+        Examples of literals include: `"hello"`, `b'bytes'`, `1u`, `4.2`, `-2`,
+        `true`, `null`.
+      example:
+        int64Value: int64Value
+        uint64Value: uint64Value
+        stringValue: stringValue
+        durationValue: durationValue
+        timestampValue: 2000-01-23T04:56:07.000+00:00
+        boolValue: true
+        doubleValue: 0.8008281904610115
+        bytesValue: bytesValue
+        nullValue: nullValue
+      properties:
+        nullValue:
+          description: null value.
+          type: string
+        boolValue:
+          description: boolean value.
+          type: boolean
+        int64Value:
+          description: int64 value.
+          format: int64
+          type: string
+        uint64Value:
+          description: uint64 value.
+          format: uint64
+          type: string
+        doubleValue:
+          description: double value.
+          format: double
+          type: number
+        stringValue:
+          description: string value.
+          type: string
+        bytesValue:
+          description: bytes value.
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+        durationValue:
+          description: |-
+            protobuf.Duration value.
+
+            Deprecated: duration is no longer considered a builtin cel type.
+          type: string
+        timestampValue:
+          description: |-
+            protobuf.Timestamp value.
+
+            Deprecated: timestamp is no longer considered a builtin cel type.
+          format: date-time
+          type: string
+      type: object
+    Context:
+      description: |-
+        Context encapsulates the information related to a single operation,
+        including the tuples involved and the associated attributes.
+      properties:
+        tuples:
+          description: A repeated field of tuples involved in the operation.
+          items:
+            $ref: '#/components/schemas/Tuple'
+          type: array
+        attributes:
+          description: A repeated field of attributes associated with the operation.
+          items:
+            $ref: '#/components/schemas/Attribute'
+          type: array
+        data:
+          description: Additional data associated with the context.
+          properties: {}
+          type: object
+      type: object
+    ContextAttribute:
+      description: ContextAttribute defines a context attribute which includes its
+        name.
+      example:
+        name: name
+      properties:
+        name:
+          title: Name of the context attribute
+          type: string
+      type: object
+    CreateList:
+      description: |-
+        A list creation expression.
+
+        Lists may either be homogenous, e.g. `[1, 2, 3]`, or heterogeneous, e.g.
+        `dyn([1, 'hello', 2.0])`
+      example:
+        elements:
+        - null
+        - null
+        optionalIndices:
+        - 5
+        - 5
+      properties:
+        elements:
+          description: The elements part of the list.
+          items:
+            $ref: '#/components/schemas/Expr'
+          type: array
+        optionalIndices:
+          description: |-
+            The indices within the elements list which are marked as optional
+            elements.
+
+            When an optional-typed value is present, the value it contains
+            is included in the list. If the optional-typed value is absent, the list
+            element is omitted from the CreateList result.
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    CreateStruct:
+      description: |-
+        A map or message creation expression.
+
+        Maps are constructed as `{'key_name': 'value'}`. Message construction is
+        similar, but prefixed with a type name and composed of field ids:
+        `types.MyType{field_id: 'value'}`.
+      example:
+        messageName: messageName
+        entries:
+        - fieldKey: fieldKey
+          mapKey: null
+          id: id
+          value: null
+          optionalEntry: true
+        - fieldKey: fieldKey
+          mapKey: null
+          id: id
+          value: null
+          optionalEntry: true
+      properties:
+        messageName:
+          description: |-
+            The type name of the message to be created, empty when creating map
+            literals.
+          type: string
+        entries:
+          description: The entries in the creation expression.
+          items:
+            $ref: '#/components/schemas/Entry'
+          type: array
+      type: object
+    DataBundle:
+      description: |-
+        DataBundle is a message representing a bundle of data, which includes a name,
+        a list of arguments, and a series of operations.
+      example:
+        operations:
+        - attributes_write:
+          - attributes_write
+          - attributes_write
+          relationships_delete:
+          - relationships_delete
+          - relationships_delete
+          relationships_write:
+          - relationships_write
+          - relationships_write
+          attributes_delete:
+          - attributes_delete
+          - attributes_delete
+        - attributes_write:
+          - attributes_write
+          - attributes_write
+          relationships_delete:
+          - relationships_delete
+          - relationships_delete
+          relationships_write:
+          - relationships_write
+          - relationships_write
+          attributes_delete:
+          - attributes_delete
+          - attributes_delete
+        name: name
+        arguments:
+        - arguments
+        - arguments
+      properties:
+        name:
+          description: '''name'' is a simple string field representing the name of
+            the DataBundle.'
+          type: string
+        arguments:
+          description: |-
+            'arguments' is a repeated field, which means it can contain multiple strings.
+            These are used to store a list of arguments related to the DataBundle.
+          items:
+            type: string
+          type: array
+        operations:
+          description: |-
+            'operations' is a repeated field containing multiple Operation messages.
+            Each Operation represents a specific action or set of actions to be performed.
+          items:
+            $ref: '#/components/schemas/v1.Operation'
+          type: array
+      type: object
+    DataChange:
+      description: "DataChange represents a single change in data, with an operation\
+        \ type and the actual change which could be a tuple or an attribute."
+      example:
+        tuple:
+          subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+        attribute:
+          attribute: attribute
+          value:
+            '@type': '@type'
+          entity:
+            id: id
+            type: type
+        operation: OPERATION_UNSPECIFIED
+      properties:
+        operation:
+          $ref: '#/components/schemas/DataChange.Operation'
+        tuple:
+          $ref: '#/components/schemas/Tuple'
+        attribute:
+          $ref: '#/components/schemas/Attribute'
+      type: object
+    DataChange.Operation:
+      default: OPERATION_UNSPECIFIED
+      description: |2-
+         - OPERATION_UNSPECIFIED: Default operation, not specified.
+         - OPERATION_CREATE: Creation operation.
+         - OPERATION_DELETE: Deletion operation.
+      enum:
+      - OPERATION_UNSPECIFIED
+      - OPERATION_CREATE
+      - OPERATION_DELETE
+      type: string
+    DataChanges:
+      description: DataChanges represent changes in data with a snap token and a list
+        of data change objects.
+      example:
+        snap_token: snap_token
+        data_changes:
+        - tuple:
+            subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          attribute:
+            attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          operation: OPERATION_UNSPECIFIED
+        - tuple:
+            subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          attribute:
+            attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          operation: OPERATION_UNSPECIFIED
+      properties:
+        snap_token:
+          description: The snapshot token.
+          type: string
+        data_changes:
+          description: The list of data changes.
+          items:
+            $ref: '#/components/schemas/DataChange'
+          type: array
+      type: object
+    DataDeleteResponse:
+      description: |-
+        DataDeleteResponse defines the structure of the response to a data delete request.
+        It includes a snap_token representing the state of the database after the deletion.
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      type: object
+    DataWriteRequestMetadata:
+      description: |-
+        DataWriteRequestMetadata defines the structure of metadata for a write request.
+        It includes the schema version of the data to be written.
+      properties:
+        schema_version:
+          description: schema_version represents the version of the schema for the
+            data being written.
+          type: string
+      type: object
+    DataWriteResponse:
+      description: |-
+        DataWriteResponse defines the structure of the response after writing data.
+        It contains the snap_token generated after the write operation.
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+      type: object
+    Entity:
+      description: Entity represents an entity with a type and an identifier.
+      example:
+        id: id
+        type: type
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+      type: object
+    EntityDefinition:
+      description: The EntityDefinition message provides detailed information about
+        a specific entity.
+      example:
+        references:
+          key: REFERENCE_UNSPECIFIED
+        permissions:
+          key:
+            name: name
+            child:
+              leaf:
+                call:
+                  ruleName: ruleName
+                  arguments:
+                  - computedAttribute:
+                      name: name
+                    contextAttribute:
+                      name: name
+                  - computedAttribute:
+                      name: name
+                    contextAttribute:
+                      name: name
+                computedUserSet:
+                  relation: relation
+                computedAttribute:
+                  name: name
+                tupleToUserSet:
+                  computed:
+                    relation: relation
+                  tupleSet:
+                    relation: relation
+              rewrite:
+                rewriteOperation: OPERATION_UNSPECIFIED
+                children:
+                - null
+                - null
+        name: name
+        attributes:
+          key:
+            name: name
+            type: ATTRIBUTE_TYPE_UNSPECIFIED
+        relations:
+          key:
+            name: name
+            relationReferences:
+            - type: type
+              relation: relation
+            - type: type
+              relation: relation
+      properties:
+        name:
+          description: "The name of the entity, which follows a specific string pattern\
+            \ and has a maximum byte size."
+          type: string
+        relations:
+          additionalProperties:
+            $ref: '#/components/schemas/RelationDefinition'
+          description: "Map of relation definitions within this entity. The key is\
+            \ the relation name, and the value is the RelationDefinition."
+          type: object
+        permissions:
+          additionalProperties:
+            $ref: '#/components/schemas/PermissionDefinition'
+          description: "Map of permission definitions within this entity. The key\
+            \ is the permission name, and the value is the PermissionDefinition."
+          type: object
+        attributes:
+          additionalProperties:
+            $ref: '#/components/schemas/AttributeDefinition'
+          description: "Map of attribute definitions within this entity. The key is\
+            \ the attribute name, and the value is the AttributeDefinition."
+          type: object
+        references:
+          additionalProperties:
+            $ref: '#/components/schemas/EntityDefinition.Reference'
+          description: "Map of references indicating whether a string pertains to\
+            \ a relation, permission, or attribute."
+          type: object
+      type: object
+    EntityDefinition.Reference:
+      default: REFERENCE_UNSPECIFIED
+      description: |-
+        The Reference enum specifies whether a name pertains to a relation, permission, or attribute.
+
+         - REFERENCE_UNSPECIFIED: Default, unspecified reference.
+         - REFERENCE_RELATION: Indicates that the name refers to a relation.
+         - REFERENCE_PERMISSION: Indicates that the name refers to a permission.
+         - REFERENCE_ATTRIBUTE: Indicates that the name refers to an attribute.
+      enum:
+      - REFERENCE_UNSPECIFIED
+      - REFERENCE_RELATION
+      - REFERENCE_PERMISSION
+      - REFERENCE_ATTRIBUTE
+      type: string
+    EntityFilter:
+      description: EntityFilter is used to filter entities based on the type and ids.
+      example:
+        ids:
+        - ids
+        - ids
+        type: type
+      properties:
+        type:
+          title: Type of the entity
+          type: string
+        ids:
+          items:
+            type: string
+          title: List of entity IDs
+          type: array
+      type: object
+    Entry:
+      description: Represents an entry.
+      example:
+        fieldKey: fieldKey
+        mapKey: null
+        id: id
+        value: null
+        optionalEntry: true
+      properties:
+        id:
+          description: |-
+            Required. An id assigned to this node by the parser which is unique
+            in a given expression tree. This is used to associate type
+            information and other attributes to the node.
+          format: int64
+          type: string
+        fieldKey:
+          description: The field key for a message creator statement.
+          type: string
+        mapKey:
+          $ref: '#/components/schemas/Expr'
+        value:
+          $ref: '#/components/schemas/Expr'
+        optionalEntry:
+          description: Whether the key-value pair is optional.
+          type: boolean
+      type: object
+    Expand:
+      description: |-
+        Expand is used to define a hierarchical structure for permissions.
+        It has an entity, permission, and arguments. The node can be either another hierarchical structure or a set of subjects.
+      example:
+        expand:
+          children:
+          - null
+          - null
+          operation: OPERATION_UNSPECIFIED
+        permission: permission
+        arguments:
+        - computedAttribute:
+            name: name
+          contextAttribute:
+            name: name
+        - computedAttribute:
+            name: name
+          contextAttribute:
+            name: name
+        leaf:
+          subjects:
+            subjects:
+            - id: id
+              type: type
+              relation: relation
+            - id: id
+              type: type
+              relation: relation
+          values:
+            values:
+              key:
+                '@type': '@type'
+          value:
+            '@type': '@type'
+        entity:
+          id: id
+          type: type
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        permission:
+          description: permission is the permission applied to the entity.
+          type: string
+        arguments:
+          description: arguments are the additional information or context used to
+            evaluate permissions.
+          items:
+            $ref: '#/components/schemas/Argument'
+          type: array
+        expand:
+          $ref: '#/components/schemas/ExpandTreeNode'
+        leaf:
+          $ref: '#/components/schemas/ExpandLeaf'
+      type: object
+    ExpandLeaf:
+      description: ExpandLeaf is the leaf node of an Expand tree and can be either
+        a set of Subjects or a set of Values.
+      example:
+        subjects:
+          subjects:
+          - id: id
+            type: type
+            relation: relation
+          - id: id
+            type: type
+            relation: relation
+        values:
+          values:
+            key:
+              '@type': '@type'
+        value:
+          '@type': '@type'
+      properties:
+        subjects:
+          $ref: '#/components/schemas/Subjects'
+        values:
+          $ref: '#/components/schemas/Values'
+        value:
+          $ref: '#/components/schemas/Any'
+      type: object
+    ExpandTreeNode:
+      description: ExpandTreeNode represents a node in an expansion tree with a specific
+        operation and its children.
+      example:
+        children:
+        - null
+        - null
+        operation: OPERATION_UNSPECIFIED
+      properties:
+        operation:
+          $ref: '#/components/schemas/ExpandTreeNode.Operation'
+        children:
+          items:
+            $ref: '#/components/schemas/Expand'
+          title: The children of this tree node
+          type: array
+      type: object
+    ExpandTreeNode.Operation:
+      default: OPERATION_UNSPECIFIED
+      description: Operation is an enum representing the type of operation to be applied
+        on the tree node.
+      enum:
+      - OPERATION_UNSPECIFIED
+      - OPERATION_UNION
+      - OPERATION_INTERSECTION
+      - OPERATION_EXCLUSION
+      type: string
+    Expr:
+      description: |-
+        An abstract representation of a common expression.
+
+        Expressions are abstractly represented as a collection of identifiers,
+        select statements, function calls, literals, and comprehensions. All
+        operators with the exception of the '.' operator are modelled as function
+        calls. This makes it easy to represent new operators into the existing AST.
+
+        All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+        type-check for an expression to be valid. A reference may either be a bare
+        identifier `name` or a qualified identifier `google.api.name`. References
+        may either refer to a value or a function declaration.
+
+        For example, the expression `google.api.name.startsWith('expr')` references
+        the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+        the function declaration `startsWith`.
+      example:
+        identExpr:
+          name: name
+        selectExpr:
+          field: field
+          testOnly: true
+          operand: null
+        comprehensionExpr:
+          result: null
+          loopCondition: null
+          accuVar: accuVar
+          accuInit: null
+          iterVar: iterVar
+          iterRange: null
+          loopStep: null
+        structExpr:
+          messageName: messageName
+          entries:
+          - fieldKey: fieldKey
+            mapKey: null
+            id: id
+            value: null
+            optionalEntry: true
+          - fieldKey: fieldKey
+            mapKey: null
+            id: id
+            value: null
+            optionalEntry: true
+        id: id
+        callExpr:
+          args:
+          - null
+          - null
+          function: function
+          target: null
+        listExpr:
+          elements:
+          - null
+          - null
+          optionalIndices:
+          - 5
+          - 5
+        constExpr:
+          int64Value: int64Value
+          uint64Value: uint64Value
+          stringValue: stringValue
+          durationValue: durationValue
+          timestampValue: 2000-01-23T04:56:07.000+00:00
+          boolValue: true
+          doubleValue: 0.8008281904610115
+          bytesValue: bytesValue
+          nullValue: nullValue
+      properties:
+        id:
+          description: |-
+            Required. An id assigned to this node by the parser which is unique in a
+            given expression tree. This is used to associate type information and other
+            attributes to a node in the parse tree.
+          format: int64
+          type: string
+        constExpr:
+          $ref: '#/components/schemas/Constant'
+        identExpr:
+          $ref: '#/components/schemas/Ident'
+        selectExpr:
+          $ref: '#/components/schemas/Select'
+        callExpr:
+          $ref: '#/components/schemas/Expr.Call'
+        listExpr:
+          $ref: '#/components/schemas/CreateList'
+        structExpr:
+          $ref: '#/components/schemas/CreateStruct'
+        comprehensionExpr:
+          $ref: '#/components/schemas/Comprehension'
+      type: object
+    Expr.Call:
+      description: |-
+        A call expression, including calls to predefined functions and operators.
+
+        For example, `value == 10`, `size(map_value)`.
+      example:
+        args:
+        - null
+        - null
+        function: function
+        target: null
+      properties:
+        target:
+          $ref: '#/components/schemas/Expr'
+        function:
+          description: Required. The name of the function or method being called.
+          type: string
+        args:
+          description: The arguments.
+          items:
+            $ref: '#/components/schemas/Expr'
+          type: array
+      type: object
+    FunctionType:
+      description: Function type with result and arg types.
+      example:
+        argTypes:
+        - null
+        - null
+        resultType: null
+      properties:
+        resultType:
+          $ref: '#/components/schemas/v1alpha1.Type'
+        argTypes:
+          description: Argument types of the function.
+          items:
+            $ref: '#/components/schemas/v1alpha1.Type'
+          type: array
+      type: object
+    Ident:
+      description: An identifier expression. e.g. `request`.
+      example:
+        name: name
+      properties:
+        name:
+          description: |-
+            Required. Holds a single, unqualified identifier, possibly preceded by a
+            '.'.
+
+            Qualified names are represented by the [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression.
+          type: string
+      type: object
+    Leaf:
+      description: Leaf represents a leaf node in the permission tree.
+      example:
+        call:
+          ruleName: ruleName
+          arguments:
+          - computedAttribute:
+              name: name
+            contextAttribute:
+              name: name
+          - computedAttribute:
+              name: name
+            contextAttribute:
+              name: name
+        computedUserSet:
+          relation: relation
+        computedAttribute:
+          name: name
+        tupleToUserSet:
+          computed:
+            relation: relation
+          tupleSet:
+            relation: relation
+      properties:
+        computedUserSet:
+          $ref: '#/components/schemas/ComputedUserSet'
+        tupleToUserSet:
+          $ref: '#/components/schemas/TupleToUserSet'
+        computedAttribute:
+          $ref: '#/components/schemas/ComputedAttribute'
+        call:
+          $ref: '#/components/schemas/v1.Call'
+      type: object
+    ListType:
+      description: "List type with typed elements, e.g. `list<example.proto.MyMessage>`."
+      example:
+        elemType: null
+      properties:
+        elemType:
+          $ref: '#/components/schemas/v1alpha1.Type'
+      type: object
+    MapType:
+      description: "Map type with parameterized key and value types, e.g. `map<string,\
+        \ int>`."
+      example:
+        valueType: null
+        keyType: null
+      properties:
+        keyType:
+          $ref: '#/components/schemas/v1alpha1.Type'
+        valueType:
+          $ref: '#/components/schemas/v1alpha1.Type'
+      type: object
+    NullValue:
+      default: NULL_VALUE
+      description: |-
+        `NullValue` is a singleton enumeration to represent the null value for the
+        `Value` type union.
+
+        The JSON representation for `NullValue` is JSON `null`.
+
+         - NULL_VALUE: Null value.
+      enum:
+      - NULL_VALUE
+      type: string
+    Partials:
+      properties:
+        write:
+          items:
+            type: string
+          type: array
+        delete:
+          items:
+            type: string
+          type: array
+        update:
+          items:
+            type: string
+          type: array
+      title: "Partials contains the write, update and delete definitions"
+      type: object
+    PermissionCheckRequestMetadata:
+      description: PermissionCheckRequestMetadata metadata for the PermissionCheckRequest.
+      properties:
+        schema_version:
+          description: Version of the schema.
+          type: string
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+        depth:
+          description: Query limit when if recursive database queries got in loop
+          format: int32
+          type: integer
+      type: object
+    PermissionCheckResponse:
+      description: PermissionCheckResponse is the response message for the Check method
+        in the Permission service.
+      example:
+        can: CHECK_RESULT_UNSPECIFIED
+        metadata:
+          check_count: 0
+      properties:
+        can:
+          $ref: '#/components/schemas/CheckResult'
+        metadata:
+          $ref: '#/components/schemas/PermissionCheckResponseMetadata'
+      type: object
+    PermissionCheckResponseMetadata:
+      description: PermissionCheckResponseMetadata metadata for the PermissionCheckResponse.
+      example:
+        check_count: 0
+      properties:
+        check_count:
+          description: The count of the checks performed.
+          format: int32
+          type: integer
+      type: object
+    PermissionDefinition:
+      description: The PermissionDefinition message provides detailed information
+        about a specific permission.
+      example:
+        name: name
+        child:
+          leaf:
+            call:
+              ruleName: ruleName
+              arguments:
+              - computedAttribute:
+                  name: name
+                contextAttribute:
+                  name: name
+              - computedAttribute:
+                  name: name
+                contextAttribute:
+                  name: name
+            computedUserSet:
+              relation: relation
+            computedAttribute:
+              name: name
+            tupleToUserSet:
+              computed:
+                relation: relation
+              tupleSet:
+                relation: relation
+          rewrite:
+            rewriteOperation: OPERATION_UNSPECIFIED
+            children:
+            - null
+            - null
+      properties:
+        name:
+          description: "The name of the permission, which follows a specific string\
+            \ pattern and has a maximum byte size."
+          type: string
+        child:
+          $ref: '#/components/schemas/Child'
+      type: object
+    PermissionExpandRequestMetadata:
+      description: PermissionExpandRequestMetadata metadata for the PermissionExpandRequest.
+      properties:
+        schema_version:
+          description: Version of the schema.
+          type: string
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+      type: object
+    PermissionExpandResponse:
+      description: PermissionExpandResponse is the response message for the Expand
+        method in the Permission service.
+      example:
+        tree:
+          expand:
+            children:
+            - null
+            - null
+            operation: OPERATION_UNSPECIFIED
+          permission: permission
+          arguments:
+          - computedAttribute:
+              name: name
+            contextAttribute:
+              name: name
+          - computedAttribute:
+              name: name
+            contextAttribute:
+              name: name
+          leaf:
+            subjects:
+              subjects:
+              - id: id
+                type: type
+                relation: relation
+              - id: id
+                type: type
+                relation: relation
+            values:
+              values:
+                key:
+                  '@type': '@type'
+            value:
+              '@type': '@type'
+          entity:
+            id: id
+            type: type
+      properties:
+        tree:
+          $ref: '#/components/schemas/Expand'
+      type: object
+    PermissionLookupEntityRequestMetadata:
+      description: PermissionLookupEntityRequestMetadata metadata for the PermissionLookupEntityRequest.
+      properties:
+        schema_version:
+          description: Version of the schema.
+          type: string
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+        depth:
+          description: Query limit when if recursive database queries got in loop.
+          format: int32
+          type: integer
+      type: object
+    PermissionLookupEntityResponse:
+      description: PermissionLookupEntityResponse is the response message for the
+        LookupEntity method in the Permission service.
+      example:
+        entity_ids:
+        - entity_ids
+        - entity_ids
+      properties:
+        entity_ids:
+          description: List of identifiers for entities that match the lookup.
+          items:
+            type: string
+          type: array
+      type: object
+    PermissionLookupEntityStreamResponse:
+      description: PermissionLookupEntityStreamResponse is the response message for
+        the LookupEntityStream method in the Permission service.
+      example:
+        entity_id: entity_id
+      properties:
+        entity_id:
+          description: Identifier for an entity that matches the lookup.
+          type: string
+      type: object
+    PermissionLookupSubjectRequestMetadata:
+      description: PermissionLookupSubjectRequestMetadata metadata for the PermissionLookupSubjectRequest.
+      properties:
+        schema_version:
+          description: Version of the schema.
+          type: string
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+        depth:
+          description: Query limit when if recursive database queries got in loop.
+          format: int32
+          type: integer
+      type: object
+    PermissionLookupSubjectResponse:
+      description: PermissionLookupSubjectResponse is the response message for the
+        LookupSubject method in the Permission service.
+      example:
+        subject_ids:
+        - subject_ids
+        - subject_ids
+      properties:
+        subject_ids:
+          description: List of identifiers for subjects that match the lookup.
+          items:
+            type: string
+          type: array
+      type: object
+    PermissionSubjectPermissionRequestMetadata:
+      description: PermissionSubjectPermissionRequestMetadata metadata for the PermissionSubjectPermissionRequest.
+      properties:
+        schema_version:
+          description: Version of the schema.
+          type: string
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+        only_permission:
+          description: Whether to only check permissions.
+          type: boolean
+        depth:
+          description: Query limit when if recursive database queries got in loop.
+          format: int32
+          type: integer
+      type: object
+    PermissionSubjectPermissionResponse:
+      description: PermissionSubjectPermissionResponse is the response message for
+        the SubjectPermission method in the Permission service.
+      example:
+        results:
+          key: CHECK_RESULT_UNSPECIFIED
+      properties:
+        results:
+          additionalProperties:
+            $ref: '#/components/schemas/CheckResult'
+          description: Map of results for each permission check.
+          type: object
+      type: object
+    PrimitiveType:
+      default: PRIMITIVE_TYPE_UNSPECIFIED
+      description: |-
+        CEL primitive types.
+
+         - PRIMITIVE_TYPE_UNSPECIFIED: Unspecified type.
+         - BOOL: Boolean type.
+         - INT64: Int64 type.
+
+        Proto-based integer values are widened to int64.
+         - UINT64: Uint64 type.
+
+        Proto-based unsigned integer values are widened to uint64.
+         - DOUBLE: Double type.
+
+        Proto-based float values are widened to double values.
+         - STRING: String type.
+         - BYTES: Bytes type.
+      enum:
+      - PRIMITIVE_TYPE_UNSPECIFIED
+      - BOOL
+      - INT64
+      - UINT64
+      - DOUBLE
+      - STRING
+      - BYTES
+      type: string
+    RelationDefinition:
+      description: The RelationDefinition message provides detailed information about
+        a specific relation.
+      example:
+        name: name
+        relationReferences:
+        - type: type
+          relation: relation
+        - type: type
+          relation: relation
+      properties:
+        name:
+          description: "The name of the relation, which follows a specific string\
+            \ pattern and has a maximum byte size."
+          type: string
+        relationReferences:
+          description: A list of references to other relations.
+          items:
+            $ref: '#/components/schemas/RelationReference'
+          type: array
+      type: object
+    RelationReference:
+      description: The RelationReference message provides a reference to a specific
+        relation.
+      example:
+        type: type
+        relation: relation
+      properties:
+        type:
+          description: "The type of the referenced entity, which follows a specific\
+            \ string pattern and has a maximum byte size."
+          type: string
+        relation:
+          description: "The name of the referenced relation, which follows a specific\
+            \ string pattern and has a maximum byte size."
+          type: string
+      type: object
+    RelationshipDeleteResponse:
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      title: RelationshipDeleteResponse
+      type: object
+    RelationshipReadRequestMetadata:
+      description: |-
+        RelationshipReadRequestMetadata defines the structure of the metadata for a read request focused on relationships.
+        It includes the snap_token associated with a particular state of the database.
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      type: object
+    RelationshipReadResponse:
+      description: |-
+        RelationshipReadResponse defines the structure of the response after reading relationships.
+        It includes the tuples representing the relationships and a continuous token for handling result pagination.
+      example:
+        continuous_token: continuous_token
+        tuples:
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+      properties:
+        tuples:
+          description: "tuples is a list of the relationships retrieved in the read\
+            \ operation, represented as entity-relation-entity triples."
+          items:
+            $ref: '#/components/schemas/Tuple'
+          type: array
+        continuous_token:
+          description: continuous_token is used in the case of paginated reads to
+            retrieve the next page of results.
+          type: string
+      type: object
+    RelationshipWriteRequestMetadata:
+      properties:
+        schema_version:
+          type: string
+      title: RelationshipWriteRequestMetadata
+      type: object
+    RelationshipWriteResponse:
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)"
+          type: string
+      title: RelationshipWriteResponse
+      type: object
+    Rewrite:
+      description: |-
+        The Rewrite message represents a specific rewrite operation.
+        This operation could be one of the following: union, intersection, or exclusion.
+      example:
+        rewriteOperation: OPERATION_UNSPECIFIED
+        children:
+        - null
+        - null
+      properties:
+        rewriteOperation:
+          $ref: '#/components/schemas/Rewrite.Operation'
+        children:
+          description: A list of children that are operated upon by the rewrite operation.
+          items:
+            $ref: '#/components/schemas/Child'
+          type: array
+      type: object
+    Rewrite.Operation:
+      default: OPERATION_UNSPECIFIED
+      description: |-
+        Operation enum includes potential rewrite operations.
+        OPERATION_UNION: Represents a union operation.
+        OPERATION_INTERSECTION: Represents an intersection operation.
+        OPERATION_EXCLUSION: Represents an exclusion operation.
+
+         - OPERATION_UNSPECIFIED: Default, unspecified operation.
+         - OPERATION_UNION: Represents a union operation.
+         - OPERATION_INTERSECTION: Represents an intersection operation.
+         - OPERATION_EXCLUSION: Represents an exclusion operation.
+      enum:
+      - OPERATION_UNSPECIFIED
+      - OPERATION_UNION
+      - OPERATION_INTERSECTION
+      - OPERATION_EXCLUSION
+      type: string
+    RuleDefinition:
+      description: The RuleDefinition message provides detailed information about
+        a specific rule.
+      example:
+        expression:
+          sourceInfo:
+            syntaxVersion: syntaxVersion
+            location: location
+            lineOffsets:
+            - 6
+            - 6
+            positions:
+              key: 1
+            macroCalls:
+              key:
+                identExpr:
+                  name: name
+                selectExpr:
+                  field: field
+                  testOnly: true
+                  operand: null
+                comprehensionExpr:
+                  result: null
+                  loopCondition: null
+                  accuVar: accuVar
+                  accuInit: null
+                  iterVar: iterVar
+                  iterRange: null
+                  loopStep: null
+                structExpr:
+                  messageName: messageName
+                  entries:
+                  - fieldKey: fieldKey
+                    mapKey: null
+                    id: id
+                    value: null
+                    optionalEntry: true
+                  - fieldKey: fieldKey
+                    mapKey: null
+                    id: id
+                    value: null
+                    optionalEntry: true
+                id: id
+                callExpr:
+                  args:
+                  - null
+                  - null
+                  function: function
+                  target: null
+                listExpr:
+                  elements:
+                  - null
+                  - null
+                  optionalIndices:
+                  - 5
+                  - 5
+                constExpr:
+                  int64Value: int64Value
+                  uint64Value: uint64Value
+                  stringValue: stringValue
+                  durationValue: durationValue
+                  timestampValue: 2000-01-23T04:56:07.000+00:00
+                  boolValue: true
+                  doubleValue: 0.8008281904610115
+                  bytesValue: bytesValue
+                  nullValue: nullValue
+          typeMap:
+            key:
+              primitive: PRIMITIVE_TYPE_UNSPECIFIED
+              abstractType:
+                parameterTypes:
+                - null
+                - null
+                name: name
+              mapType:
+                valueType: null
+                keyType: null
+              wrapper: null
+              typeParam: typeParam
+              type: null
+              error: "{}"
+              listType:
+                elemType: null
+              wellKnown: WELL_KNOWN_TYPE_UNSPECIFIED
+              "null": "null"
+              messageType: messageType
+              function:
+                argTypes:
+                - null
+                - null
+                resultType: null
+              dyn: "{}"
+          exprVersion: exprVersion
+          referenceMap:
+            key:
+              overloadId:
+              - overloadId
+              - overloadId
+              name: name
+              value:
+                int64Value: int64Value
+                uint64Value: uint64Value
+                stringValue: stringValue
+                durationValue: durationValue
+                timestampValue: 2000-01-23T04:56:07.000+00:00
+                boolValue: true
+                doubleValue: 0.8008281904610115
+                bytesValue: bytesValue
+                nullValue: nullValue
+          expr:
+            identExpr:
+              name: name
+            selectExpr:
+              field: field
+              testOnly: true
+              operand: null
+            comprehensionExpr:
+              result: null
+              loopCondition: null
+              accuVar: accuVar
+              accuInit: null
+              iterVar: iterVar
+              iterRange: null
+              loopStep: null
+            structExpr:
+              messageName: messageName
+              entries:
+              - fieldKey: fieldKey
+                mapKey: null
+                id: id
+                value: null
+                optionalEntry: true
+              - fieldKey: fieldKey
+                mapKey: null
+                id: id
+                value: null
+                optionalEntry: true
+            id: id
+            callExpr:
+              args:
+              - null
+              - null
+              function: function
+              target: null
+            listExpr:
+              elements:
+              - null
+              - null
+              optionalIndices:
+              - 5
+              - 5
+            constExpr:
+              int64Value: int64Value
+              uint64Value: uint64Value
+              stringValue: stringValue
+              durationValue: durationValue
+              timestampValue: 2000-01-23T04:56:07.000+00:00
+              boolValue: true
+              doubleValue: 0.8008281904610115
+              bytesValue: bytesValue
+              nullValue: nullValue
+        name: name
+        arguments:
+          key: null
+      properties:
+        name:
+          description: "The name of the rule, which follows a specific string pattern\
+            \ and has a maximum byte size."
+          type: string
+        arguments:
+          additionalProperties:
+            $ref: '#/components/schemas/AttributeType'
+          description: "Map of arguments for this rule. The key is the attribute name,\
+            \ and the value is the AttributeType."
+          type: object
+        expression:
+          $ref: '#/components/schemas/CheckedExpr'
+      type: object
+    SchemaDefinition:
+      description: |-
+        The SchemaDefinition message provides definitions for entities and rules,
+        and includes references to clarify whether a name refers to an entity or a rule.
+      example:
+        ruleDefinitions:
+          key:
+            expression:
+              sourceInfo:
+                syntaxVersion: syntaxVersion
+                location: location
+                lineOffsets:
+                - 6
+                - 6
+                positions:
+                  key: 1
+                macroCalls:
+                  key:
+                    identExpr:
+                      name: name
+                    selectExpr:
+                      field: field
+                      testOnly: true
+                      operand: null
+                    comprehensionExpr:
+                      result: null
+                      loopCondition: null
+                      accuVar: accuVar
+                      accuInit: null
+                      iterVar: iterVar
+                      iterRange: null
+                      loopStep: null
+                    structExpr:
+                      messageName: messageName
+                      entries:
+                      - fieldKey: fieldKey
+                        mapKey: null
+                        id: id
+                        value: null
+                        optionalEntry: true
+                      - fieldKey: fieldKey
+                        mapKey: null
+                        id: id
+                        value: null
+                        optionalEntry: true
+                    id: id
+                    callExpr:
+                      args:
+                      - null
+                      - null
+                      function: function
+                      target: null
+                    listExpr:
+                      elements:
+                      - null
+                      - null
+                      optionalIndices:
+                      - 5
+                      - 5
+                    constExpr:
+                      int64Value: int64Value
+                      uint64Value: uint64Value
+                      stringValue: stringValue
+                      durationValue: durationValue
+                      timestampValue: 2000-01-23T04:56:07.000+00:00
+                      boolValue: true
+                      doubleValue: 0.8008281904610115
+                      bytesValue: bytesValue
+                      nullValue: nullValue
+              typeMap:
+                key:
+                  primitive: PRIMITIVE_TYPE_UNSPECIFIED
+                  abstractType:
+                    parameterTypes:
+                    - null
+                    - null
+                    name: name
+                  mapType:
+                    valueType: null
+                    keyType: null
+                  wrapper: null
+                  typeParam: typeParam
+                  type: null
+                  error: "{}"
+                  listType:
+                    elemType: null
+                  wellKnown: WELL_KNOWN_TYPE_UNSPECIFIED
+                  "null": "null"
+                  messageType: messageType
+                  function:
+                    argTypes:
+                    - null
+                    - null
+                    resultType: null
+                  dyn: "{}"
+              exprVersion: exprVersion
+              referenceMap:
+                key:
+                  overloadId:
+                  - overloadId
+                  - overloadId
+                  name: name
+                  value:
+                    int64Value: int64Value
+                    uint64Value: uint64Value
+                    stringValue: stringValue
+                    durationValue: durationValue
+                    timestampValue: 2000-01-23T04:56:07.000+00:00
+                    boolValue: true
+                    doubleValue: 0.8008281904610115
+                    bytesValue: bytesValue
+                    nullValue: nullValue
+              expr:
+                identExpr:
+                  name: name
+                selectExpr:
+                  field: field
+                  testOnly: true
+                  operand: null
+                comprehensionExpr:
+                  result: null
+                  loopCondition: null
+                  accuVar: accuVar
+                  accuInit: null
+                  iterVar: iterVar
+                  iterRange: null
+                  loopStep: null
+                structExpr:
+                  messageName: messageName
+                  entries:
+                  - fieldKey: fieldKey
+                    mapKey: null
+                    id: id
+                    value: null
+                    optionalEntry: true
+                  - fieldKey: fieldKey
+                    mapKey: null
+                    id: id
+                    value: null
+                    optionalEntry: true
+                id: id
+                callExpr:
+                  args:
+                  - null
+                  - null
+                  function: function
+                  target: null
+                listExpr:
+                  elements:
+                  - null
+                  - null
+                  optionalIndices:
+                  - 5
+                  - 5
+                constExpr:
+                  int64Value: int64Value
+                  uint64Value: uint64Value
+                  stringValue: stringValue
+                  durationValue: durationValue
+                  timestampValue: 2000-01-23T04:56:07.000+00:00
+                  boolValue: true
+                  doubleValue: 0.8008281904610115
+                  bytesValue: bytesValue
+                  nullValue: nullValue
+            name: name
+            arguments:
+              key: null
+        references:
+          key: REFERENCE_UNSPECIFIED
+        entityDefinitions:
+          key:
+            references:
+              key: REFERENCE_UNSPECIFIED
+            permissions:
+              key:
+                name: name
+                child:
+                  leaf:
+                    call:
+                      ruleName: ruleName
+                      arguments:
+                      - computedAttribute:
+                          name: name
+                        contextAttribute:
+                          name: name
+                      - computedAttribute:
+                          name: name
+                        contextAttribute:
+                          name: name
+                    computedUserSet:
+                      relation: relation
+                    computedAttribute:
+                      name: name
+                    tupleToUserSet:
+                      computed:
+                        relation: relation
+                      tupleSet:
+                        relation: relation
+                  rewrite:
+                    rewriteOperation: OPERATION_UNSPECIFIED
+                    children:
+                    - null
+                    - null
+            name: name
+            attributes:
+              key:
+                name: name
+                type: ATTRIBUTE_TYPE_UNSPECIFIED
+            relations:
+              key:
+                name: name
+                relationReferences:
+                - type: type
+                  relation: relation
+                - type: type
+                  relation: relation
+      properties:
+        entityDefinitions:
+          additionalProperties:
+            $ref: '#/components/schemas/EntityDefinition'
+          description: "Map of entity definitions. The key is the entity name, and\
+            \ the value is the corresponding EntityDefinition."
+          type: object
+        ruleDefinitions:
+          additionalProperties:
+            $ref: '#/components/schemas/RuleDefinition'
+          description: "Map of rule definitions. The key is the rule name, and the\
+            \ value is the corresponding RuleDefinition."
+          type: object
+        references:
+          additionalProperties:
+            $ref: '#/components/schemas/SchemaDefinition.Reference'
+          description: Map of references to signify whether a string refers to an
+            entity or a rule.
+          type: object
+      type: object
+    SchemaDefinition.Reference:
+      default: REFERENCE_UNSPECIFIED
+      description: |-
+        The Reference enum helps distinguish whether a name corresponds to an entity or a rule.
+
+         - REFERENCE_UNSPECIFIED: Default, unspecified reference.
+         - REFERENCE_ENTITY: Indicates that the name refers to an entity.
+         - REFERENCE_RULE: Indicates that the name refers to a rule.
+      enum:
+      - REFERENCE_UNSPECIFIED
+      - REFERENCE_ENTITY
+      - REFERENCE_RULE
+      type: string
+    SchemaList:
+      example:
+        created_at: created_at
+        version: version
+      properties:
+        version:
+          type: string
+        created_at:
+          type: string
+      title: SchemaList provides a list of schema versions with their corresponding
+        creation timestamps
+      type: object
+    SchemaListResponse:
+      example:
+        head: head
+        continuous_token: continuous_token
+        schemas:
+        - created_at: created_at
+          version: version
+        - created_at: created_at
+          version: version
+      properties:
+        head:
+          title: head of the schemas is the latest version available for the tenant
+          type: string
+        schemas:
+          items:
+            $ref: '#/components/schemas/SchemaList'
+          title: list of schema versions with creation timestamps
+          type: array
+        continuous_token:
+          description: continuous_token is a string that can be used to paginate and
+            retrieve the next set of results.
+          type: string
+      title: |-
+        SchemaListResponse is the response message for the List method in the Schema service.
+        It returns a paginated list of schemas
+      type: object
+    SchemaPartialWriteRequestMetadata:
+      description: |-
+        SchemaPartialWriteRequestMetadata provides additional information for the Schema Partial Write request.
+        It contains schema_version to specify which version of the schema should be read.
+      properties:
+        schema_version:
+          description: schema_version is the string that identifies the version of
+            the schema to be read.
+          type: string
+      type: object
+    SchemaPartialWriteResponse:
+      description: |-
+        SchemaPartialWriteResponse is the response message for the Parietal Write method in the Schema service.
+        It returns the requested schema.
+      example:
+        schema_version: schema_version
+      properties:
+        schema_version:
+          description: schema_version is the string that identifies the version of
+            the written schema.
+          type: string
+      type: object
+    SchemaReadRequestMetadata:
+      description: |-
+        SchemaReadRequestMetadata provides additional information for the Schema Read request.
+        It contains schema_version to specify which version of the schema should be read.
+      properties:
+        schema_version:
+          description: schema_version is the string that identifies the version of
+            the schema to be read.
+          type: string
+      type: object
+    SchemaReadResponse:
+      description: |-
+        SchemaReadResponse is the response message for the Read method in the Schema service.
+        It returns the requested schema.
+      example:
+        schema:
+          ruleDefinitions:
+            key:
+              expression:
+                sourceInfo:
+                  syntaxVersion: syntaxVersion
+                  location: location
+                  lineOffsets:
+                  - 6
+                  - 6
+                  positions:
+                    key: 1
+                  macroCalls:
+                    key:
+                      identExpr:
+                        name: name
+                      selectExpr:
+                        field: field
+                        testOnly: true
+                        operand: null
+                      comprehensionExpr:
+                        result: null
+                        loopCondition: null
+                        accuVar: accuVar
+                        accuInit: null
+                        iterVar: iterVar
+                        iterRange: null
+                        loopStep: null
+                      structExpr:
+                        messageName: messageName
+                        entries:
+                        - fieldKey: fieldKey
+                          mapKey: null
+                          id: id
+                          value: null
+                          optionalEntry: true
+                        - fieldKey: fieldKey
+                          mapKey: null
+                          id: id
+                          value: null
+                          optionalEntry: true
+                      id: id
+                      callExpr:
+                        args:
+                        - null
+                        - null
+                        function: function
+                        target: null
+                      listExpr:
+                        elements:
+                        - null
+                        - null
+                        optionalIndices:
+                        - 5
+                        - 5
+                      constExpr:
+                        int64Value: int64Value
+                        uint64Value: uint64Value
+                        stringValue: stringValue
+                        durationValue: durationValue
+                        timestampValue: 2000-01-23T04:56:07.000+00:00
+                        boolValue: true
+                        doubleValue: 0.8008281904610115
+                        bytesValue: bytesValue
+                        nullValue: nullValue
+                typeMap:
+                  key:
+                    primitive: PRIMITIVE_TYPE_UNSPECIFIED
+                    abstractType:
+                      parameterTypes:
+                      - null
+                      - null
+                      name: name
+                    mapType:
+                      valueType: null
+                      keyType: null
+                    wrapper: null
+                    typeParam: typeParam
+                    type: null
+                    error: "{}"
+                    listType:
+                      elemType: null
+                    wellKnown: WELL_KNOWN_TYPE_UNSPECIFIED
+                    "null": "null"
+                    messageType: messageType
+                    function:
+                      argTypes:
+                      - null
+                      - null
+                      resultType: null
+                    dyn: "{}"
+                exprVersion: exprVersion
+                referenceMap:
+                  key:
+                    overloadId:
+                    - overloadId
+                    - overloadId
+                    name: name
+                    value:
+                      int64Value: int64Value
+                      uint64Value: uint64Value
+                      stringValue: stringValue
+                      durationValue: durationValue
+                      timestampValue: 2000-01-23T04:56:07.000+00:00
+                      boolValue: true
+                      doubleValue: 0.8008281904610115
+                      bytesValue: bytesValue
+                      nullValue: nullValue
+                expr:
+                  identExpr:
+                    name: name
+                  selectExpr:
+                    field: field
+                    testOnly: true
+                    operand: null
+                  comprehensionExpr:
+                    result: null
+                    loopCondition: null
+                    accuVar: accuVar
+                    accuInit: null
+                    iterVar: iterVar
+                    iterRange: null
+                    loopStep: null
+                  structExpr:
+                    messageName: messageName
+                    entries:
+                    - fieldKey: fieldKey
+                      mapKey: null
+                      id: id
+                      value: null
+                      optionalEntry: true
+                    - fieldKey: fieldKey
+                      mapKey: null
+                      id: id
+                      value: null
+                      optionalEntry: true
+                  id: id
+                  callExpr:
+                    args:
+                    - null
+                    - null
+                    function: function
+                    target: null
+                  listExpr:
+                    elements:
+                    - null
+                    - null
+                    optionalIndices:
+                    - 5
+                    - 5
+                  constExpr:
+                    int64Value: int64Value
+                    uint64Value: uint64Value
+                    stringValue: stringValue
+                    durationValue: durationValue
+                    timestampValue: 2000-01-23T04:56:07.000+00:00
+                    boolValue: true
+                    doubleValue: 0.8008281904610115
+                    bytesValue: bytesValue
+                    nullValue: nullValue
+              name: name
+              arguments:
+                key: null
+          references:
+            key: REFERENCE_UNSPECIFIED
+          entityDefinitions:
+            key:
+              references:
+                key: REFERENCE_UNSPECIFIED
+              permissions:
+                key:
+                  name: name
+                  child:
+                    leaf:
+                      call:
+                        ruleName: ruleName
+                        arguments:
+                        - computedAttribute:
+                            name: name
+                          contextAttribute:
+                            name: name
+                        - computedAttribute:
+                            name: name
+                          contextAttribute:
+                            name: name
+                      computedUserSet:
+                        relation: relation
+                      computedAttribute:
+                        name: name
+                      tupleToUserSet:
+                        computed:
+                          relation: relation
+                        tupleSet:
+                          relation: relation
+                    rewrite:
+                      rewriteOperation: OPERATION_UNSPECIFIED
+                      children:
+                      - null
+                      - null
+              name: name
+              attributes:
+                key:
+                  name: name
+                  type: ATTRIBUTE_TYPE_UNSPECIFIED
+              relations:
+                key:
+                  name: name
+                  relationReferences:
+                  - type: type
+                    relation: relation
+                  - type: type
+                    relation: relation
+      properties:
+        schema:
+          $ref: '#/components/schemas/SchemaDefinition'
+      type: object
+    SchemaWriteResponse:
+      description: |-
+        SchemaWriteResponse is the response message for the Write method in the Schema service.
+        It returns the version of the written schema.
+      example:
+        schema_version: schema_version
+      properties:
+        schema_version:
+          description: schema_version is the string that identifies the version of
+            the written schema.
+          type: string
+      type: object
+    Select:
+      description: A field selection expression. e.g. `request.auth`.
+      example:
+        field: field
+        testOnly: true
+        operand: null
+      properties:
+        operand:
+          $ref: '#/components/schemas/Expr'
+        field:
+          description: |-
+            Required. The name of the field to select.
+
+            For example, in the select expression `request.auth`, the `auth` portion
+            of the expression would be the `field`.
+          type: string
+        testOnly:
+          description: |-
+            Whether the select is to be interpreted as a field presence test.
+
+            This results from the macro `has(request.auth)`.
+          type: boolean
+      type: object
+    SourceInfo:
+      description: Source information collected at parse time.
+      example:
+        syntaxVersion: syntaxVersion
+        location: location
+        lineOffsets:
+        - 6
+        - 6
+        positions:
+          key: 1
+        macroCalls:
+          key:
+            identExpr:
+              name: name
+            selectExpr:
+              field: field
+              testOnly: true
+              operand: null
+            comprehensionExpr:
+              result: null
+              loopCondition: null
+              accuVar: accuVar
+              accuInit: null
+              iterVar: iterVar
+              iterRange: null
+              loopStep: null
+            structExpr:
+              messageName: messageName
+              entries:
+              - fieldKey: fieldKey
+                mapKey: null
+                id: id
+                value: null
+                optionalEntry: true
+              - fieldKey: fieldKey
+                mapKey: null
+                id: id
+                value: null
+                optionalEntry: true
+            id: id
+            callExpr:
+              args:
+              - null
+              - null
+              function: function
+              target: null
+            listExpr:
+              elements:
+              - null
+              - null
+              optionalIndices:
+              - 5
+              - 5
+            constExpr:
+              int64Value: int64Value
+              uint64Value: uint64Value
+              stringValue: stringValue
+              durationValue: durationValue
+              timestampValue: 2000-01-23T04:56:07.000+00:00
+              boolValue: true
+              doubleValue: 0.8008281904610115
+              bytesValue: bytesValue
+              nullValue: nullValue
+      properties:
+        syntaxVersion:
+          description: "The syntax version of the source, e.g. `cel1`."
+          type: string
+        location:
+          description: |-
+            The location name. All position information attached to an expression is
+            relative to this location.
+
+            The location could be a file, UI element, or similar. For example,
+            `acme/app/AnvilPolicy.cel`.
+          type: string
+        lineOffsets:
+          description: |-
+            Monotonically increasing list of code point offsets where newlines
+            `\n` appear.
+
+            The line number of a given position is the index `i` where for a given
+            `id` the `line_offsets[i] < id_positions[id] < line_offsets[i+1]`. The
+            column may be derivd from `id_positions[id] - line_offsets[i]`.
+          items:
+            format: int32
+            type: integer
+          type: array
+        positions:
+          additionalProperties:
+            format: int32
+            type: integer
+          description: |-
+            A map from the parse node id (e.g. `Expr.id`) to the code point offset
+            within the source.
+          type: object
+        macroCalls:
+          additionalProperties:
+            $ref: '#/components/schemas/Expr'
+          description: |-
+            A map from the parse node id where a macro replacement was made to the
+            call `Expr` that resulted in a macro expansion.
+
+            For example, `has(value.field)` is a function call that is replaced by a
+            `test_only` field selection in the AST. Likewise, the call
+            `list.exists(e, e > 10)` translates to a comprehension expression. The key
+            in the map corresponds to the expression id of the expanded macro, and the
+            value is the call `Expr` that was replaced.
+          type: object
+      type: object
+    Status:
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+    Subject:
+      description: "Subject represents an entity subject with a type, an identifier,\
+        \ and a relation."
+      example:
+        id: id
+        type: type
+        relation: relation
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+        relation:
+          type: string
+      type: object
+    SubjectFilter:
+      description: "SubjectFilter is used to filter subjects based on the type, ids\
+        \ and relation."
+      example:
+        ids:
+        - ids
+        - ids
+        type: type
+        relation: relation
+      properties:
+        type:
+          title: Type of the subject
+          type: string
+        ids:
+          items:
+            type: string
+          title: List of subject IDs
+          type: array
+        relation:
+          type: string
+      type: object
+    Subjects:
+      description: Subjects holds a repeated field of Subject type.
+      example:
+        subjects:
+        - id: id
+          type: type
+          relation: relation
+        - id: id
+          type: type
+          relation: relation
+      properties:
+        subjects:
+          description: A list of subjects.
+          items:
+            $ref: '#/components/schemas/Subject'
+          type: array
+      type: object
+    Tenant:
+      description: "Tenant represents a tenant with an id, a name, and a timestamp\
+        \ indicating when it was created."
+      example:
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: id
+      properties:
+        id:
+          description: The ID of the tenant.
+          type: string
+        name:
+          description: The name of the tenant.
+          type: string
+        created_at:
+          description: The time at which the tenant was created.
+          format: date-time
+          type: string
+      type: object
+    TenantCreateRequest:
+      description: TenantCreateRequest is the message used for the request to create
+        a tenant.
+      example:
+        name: name
+        id: id
+      properties:
+        id:
+          description: id is a unique identifier for the tenant.
+          type: string
+        name:
+          description: name is the name of the tenant.
+          type: string
+      type: object
+    TenantCreateResponse:
+      description: TenantCreateResponse is the message returned from the request to
+        create a tenant.
+      example:
+        tenant:
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+      type: object
+    TenantDeleteResponse:
+      description: TenantDeleteResponse is the message returned from the request to
+        delete a tenant.
+      example:
+        tenant:
+          name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+      properties:
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+      type: object
+    TenantListRequest:
+      description: TenantListRequest is the message used for the request to list all
+        tenants.
+      example:
+        continuous_token: continuous_token
+        page_size: 0
+      properties:
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
+      type: object
+    TenantListResponse:
+      description: TenantListResponse is the message returned from the request to
+        list all tenants.
+      example:
+        tenants:
+        - name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        - name: name
+          created_at: 2000-01-23T04:56:07.000+00:00
+          id: id
+        continuous_token: continuous_token
+      properties:
+        tenants:
+          description: tenants is a list of tenants.
+          items:
+            $ref: '#/components/schemas/Tenant'
+          type: array
+        continuous_token:
+          description: continuous_token is a string that can be used to paginate and
+            retrieve the next set of results.
+          type: string
+      type: object
+    Tuple:
+      description: "Tuple is a structure that includes an entity, a relation, and\
+        \ a subject."
+      example:
+        subject:
+          id: id
+          type: type
+          relation: relation
+        entity:
+          id: id
+          type: type
+        relation: relation
+      properties:
+        entity:
+          $ref: '#/components/schemas/Entity'
+        relation:
+          type: string
+        subject:
+          $ref: '#/components/schemas/Subject'
+      type: object
+    TupleFilter:
+      description: "TupleFilter is used to filter tuples based on the entity, relation\
+        \ and the subject."
+      example:
+        subject:
+          ids:
+          - ids
+          - ids
+          type: type
+          relation: relation
+        entity:
+          ids:
+          - ids
+          - ids
+          type: type
+        relation: relation
+      properties:
+        entity:
+          $ref: '#/components/schemas/EntityFilter'
+        relation:
+          type: string
+        subject:
+          $ref: '#/components/schemas/SubjectFilter'
+      type: object
+    TupleSet:
+      description: TupleSet represents a set of tuples associated with a specific
+        relation.
+      example:
+        relation: relation
+      properties:
+        relation:
+          type: string
+      type: object
+    TupleToUserSet:
+      description: TupleToUserSet defines a mapping from tuple sets to computed user
+        sets.
+      example:
+        computed:
+          relation: relation
+        tupleSet:
+          relation: relation
+      properties:
+        tupleSet:
+          $ref: '#/components/schemas/TupleSet'
+        computed:
+          $ref: '#/components/schemas/ComputedUserSet'
+      type: object
+    Values:
+      example:
+        values:
+          key:
+            '@type': '@type'
+      properties:
+        values:
+          additionalProperties:
+            $ref: '#/components/schemas/Any'
+          type: object
+      type: object
+    WatchResponse:
+      description: |-
+        WatchResponse is the response message for the Watch RPC. It contains the
+        changes in the data that are being watched.
+      example:
+        changes:
+          snap_token: snap_token
+          data_changes:
+          - tuple:
+              subject:
+                id: id
+                type: type
+                relation: relation
+              entity:
+                id: id
+                type: type
+              relation: relation
+            attribute:
+              attribute: attribute
+              value:
+                '@type': '@type'
+              entity:
+                id: id
+                type: type
+            operation: OPERATION_UNSPECIFIED
+          - tuple:
+              subject:
+                id: id
+                type: type
+                relation: relation
+              entity:
+                id: id
+                type: type
+              relation: relation
+            attribute:
+              attribute: attribute
+              value:
+                '@type': '@type'
+              entity:
+                id: id
+                type: type
+            operation: OPERATION_UNSPECIFIED
+      properties:
+        changes:
+          $ref: '#/components/schemas/DataChanges'
+      type: object
+    WellKnownType:
+      default: WELL_KNOWN_TYPE_UNSPECIFIED
+      description: |-
+        Well-known protobuf types treated with first-class support in CEL.
+
+         - WELL_KNOWN_TYPE_UNSPECIFIED: Unspecified type.
+         - ANY: Well-known protobuf.Any type.
+
+        Any types are a polymorphic message type. During type-checking they are
+        treated like `DYN` types, but at runtime they are resolved to a specific
+        message type specified at evaluation time.
+         - TIMESTAMP: Well-known protobuf.Timestamp type, internally referenced as `timestamp`.
+         - DURATION: Well-known protobuf.Duration type, internally referenced as `duration`.
+      enum:
+      - WELL_KNOWN_TYPE_UNSPECIFIED
+      - ANY
+      - TIMESTAMP
+      - DURATION
+      type: string
+    v1.Call:
+      description: Call represents a call to a rule. It includes the name of the rule
+        and the arguments passed to it.
+      example:
+        ruleName: ruleName
+        arguments:
+        - computedAttribute:
+            name: name
+          contextAttribute:
+            name: name
+        - computedAttribute:
+            name: name
+          contextAttribute:
+            name: name
+      properties:
+        ruleName:
+          title: Name of the rule
+          type: string
+        arguments:
+          items:
+            $ref: '#/components/schemas/Argument'
+          title: Arguments passed to the rule
+          type: array
+      type: object
+    v1.Operation:
+      description: |-
+        Operation is a message representing a series of operations that can be performed.
+        It includes fields for writing and deleting relationships and attributes.
+      example:
+        attributes_write:
+        - attributes_write
+        - attributes_write
+        relationships_delete:
+        - relationships_delete
+        - relationships_delete
+        relationships_write:
+        - relationships_write
+        - relationships_write
+        attributes_delete:
+        - attributes_delete
+        - attributes_delete
+      properties:
+        relationships_write:
+          description: |-
+            'relationships_write' is a repeated string field for storing relationship keys
+            that are to be written or created.
+          items:
+            type: string
+          type: array
+        relationships_delete:
+          description: |-
+            'relationships_delete' is a repeated string field for storing relationship keys
+            that are to be deleted or removed.
+          items:
+            type: string
+          type: array
+        attributes_write:
+          description: |-
+            'attributes_write' is a repeated string field for storing attribute keys
+            that are to be written or created.
+          items:
+            type: string
+          type: array
+        attributes_delete:
+          description: |-
+            'attributes_delete' is a repeated string field for storing attribute keys
+            that are to be deleted or removed.
+          items:
+            type: string
+          type: array
+      type: object
+    v1alpha1.Reference:
+      description: Describes a resolved reference to a declaration.
+      example:
+        overloadId:
+        - overloadId
+        - overloadId
+        name: name
+        value:
+          int64Value: int64Value
+          uint64Value: uint64Value
+          stringValue: stringValue
+          durationValue: durationValue
+          timestampValue: 2000-01-23T04:56:07.000+00:00
+          boolValue: true
+          doubleValue: 0.8008281904610115
+          bytesValue: bytesValue
+          nullValue: nullValue
+      properties:
+        name:
+          description: The fully qualified name of the declaration.
+          type: string
+        overloadId:
+          description: |-
+            For references to functions, this is a list of `Overload.overload_id`
+            values which match according to typing rules.
+
+            If the list has more than one element, overload resolution among the
+            presented candidates must happen at runtime because of dynamic types. The
+            type checker attempts to narrow down this list as much as possible.
+
+            Empty if this is not a reference to a
+            [Decl.FunctionDecl][google.api.expr.v1alpha1.Decl.FunctionDecl].
+          items:
+            type: string
+          type: array
+        value:
+          $ref: '#/components/schemas/Constant'
+      type: object
+    v1alpha1.Type:
+      description: Represents a CEL type.
+      example:
+        primitive: PRIMITIVE_TYPE_UNSPECIFIED
+        abstractType:
+          parameterTypes:
+          - null
+          - null
+          name: name
+        mapType:
+          valueType: null
+          keyType: null
+        wrapper: null
+        typeParam: typeParam
+        type: null
+        error: "{}"
+        listType:
+          elemType: null
+        wellKnown: WELL_KNOWN_TYPE_UNSPECIFIED
+        "null": "null"
+        messageType: messageType
+        function:
+          argTypes:
+          - null
+          - null
+          resultType: null
+        dyn: "{}"
+      properties:
+        dyn:
+          description: Dynamic type.
+          properties: {}
+          type: object
+        "null":
+          description: Null value.
+          type: string
+        primitive:
+          $ref: '#/components/schemas/PrimitiveType'
+        wrapper:
+          $ref: '#/components/schemas/PrimitiveType'
+        wellKnown:
+          $ref: '#/components/schemas/WellKnownType'
+        listType:
+          $ref: '#/components/schemas/ListType'
+        mapType:
+          $ref: '#/components/schemas/MapType'
+        function:
+          $ref: '#/components/schemas/FunctionType'
+        messageType:
+          description: |-
+            Protocol buffer message type.
+
+            The `message_type` string specifies the qualified message type name. For
+            example, `google.plus.Profile`.
+          type: string
+        typeParam:
+          description: |-
+            Type param type.
+
+            The `type_param` string specifies the type parameter name, e.g. `list<E>`
+            would be a `list_type` whose element type was a `type_param` type
+            named `E`.
+          type: string
+        type:
+          $ref: '#/components/schemas/v1alpha1.Type'
+        error:
+          description: |-
+            Error type.
+
+            During type-checking if an expression is an error, its type is propagated
+            as the `ERROR` type. This permits the type-checker to discover other
+            errors present in the expression.
+          properties: {}
+          type: object
+        abstractType:
+          $ref: '#/components/schemas/AbstractType'
+      type: object
+    bundle_delete_request:
+      description: |-
+        BundleDeleteRequest is used to request the deletion of a bundle.
+        It contains the tenant_id to specify the tenant and the name of the bundle to be deleted.
+      properties:
+        name:
+          description: Name of the bundle to be deleted.
+          type: string
+      type: object
+    bundle_read_request:
+      properties:
+        name:
+          type: string
+      type: object
+    bundle_write_request:
+      description: |-
+        BundleWriteRequest is used to request the writing of a bundle.
+        It contains the tenant_id to identify the tenant and the Bundles object.
+      properties:
+        bundles:
+          description: Contains the bundle data to be written.
+          items:
+            $ref: '#/components/schemas/DataBundle'
+          type: array
+      type: object
+    data_attributes_read_request:
+      description: |-
+        AttributeReadRequest defines the structure of a request for reading attributes.
+        It includes the tenant_id, metadata, attribute filter, page size for pagination, and a continuous token for multi-page results.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/AttributeReadRequestMetadata'
+        filter:
+          $ref: '#/components/schemas/AttributeFilter'
+        page_size:
+          description: |-
+            page_size specifies the number of results to return in a single page.
+            If more results are available, a continuous_token is included in the response.
+          format: int64
+          type: integer
+        continuous_token:
+          description: continuous_token is used in case of paginated reads to get
+            the next page of results.
+          type: string
+      type: object
+    data_delete_request:
+      description: |-
+        DataDeleteRequest defines the structure of a request to delete data.
+        It includes the tenant_id and filters for selecting tuples and attributes to be deleted.
+      properties:
+        tuple_filter:
+          $ref: '#/components/schemas/TupleFilter'
+        attribute_filter:
+          $ref: '#/components/schemas/AttributeFilter'
+      type: object
+    data_relationships_read_request:
+      description: |-
+        RelationshipReadRequest defines the structure of a request for reading relationships.
+        It contains the necessary information such as tenant_id, metadata, and filter for the read operation.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RelationshipReadRequestMetadata'
+        filter:
+          $ref: '#/components/schemas/TupleFilter'
+        page_size:
+          description: |-
+            page_size specifies the number of results to return in a single page.
+            If more results are available, a continuous_token is included in the response.
+          format: int64
+          type: integer
+        continuous_token:
+          description: continuous_token is used in case of paginated reads to get
+            the next page of results.
+          type: string
+      type: object
+    bundle_run_request:
+      description: |-
+        BundleRunRequest is used to request the execution of a bundle.
+        It includes tenant_id, the name of the bundle, and additional arguments for execution.
+      properties:
+        name:
+          description: Name of the bundle to be executed.
+          type: string
+        arguments:
+          additionalProperties:
+            type: string
+          description: Additional key-value pairs for execution arguments.
+          type: object
+      type: object
+    data_write_request:
+      description: |-
+        DataWriteRequest defines the structure of a request for writing data.
+        It contains the necessary information such as tenant_id, metadata,
+        tuples and attributes for the write operation.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/DataWriteRequestMetadata'
+        tuples:
+          description: tuples contains the list of tuples (entity-relation-entity
+            triples) that need to be written.
+          items:
+            $ref: '#/components/schemas/Tuple'
+          type: array
+        attributes:
+          description: attributes contains the list of attributes (entity-attribute-value
+            triples) that need to be written.
+          items:
+            $ref: '#/components/schemas/Attribute'
+          type: array
+      type: object
+    permissions_check_request:
+      description: PermissionCheckRequest is the request message for the Check method
+        in the Permission service.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PermissionCheckRequestMetadata'
+        entity:
+          $ref: '#/components/schemas/Entity'
+        permission:
+          description: The action the user wants to perform on the resource
+          type: string
+        subject:
+          $ref: '#/components/schemas/Subject'
+        context:
+          $ref: '#/components/schemas/Context'
+        arguments:
+          description: Additional arguments associated with this request.
+          items:
+            $ref: '#/components/schemas/Argument'
+          type: array
+      type: object
+    permissions_expand_request:
+      description: PermissionExpandRequest is the request message for the Expand method
+        in the Permission service.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PermissionExpandRequestMetadata'
+        entity:
+          $ref: '#/components/schemas/Entity'
+        permission:
+          description: "Name of the permission to be expanded, not required, must\
+            \ start with a letter and can include alphanumeric and underscore, max\
+            \ 64 bytes."
+          type: string
+        context:
+          $ref: '#/components/schemas/Context'
+        arguments:
+          description: Additional arguments associated with this request.
+          items:
+            $ref: '#/components/schemas/Argument'
+          type: array
+      type: object
+    permissions_lookupEntity_request:
+      description: PermissionLookupEntityRequest is the request message for the LookupEntity
+        method in the Permission service.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PermissionLookupEntityRequestMetadata'
+        entity_type:
+          description: "Type of the entity to lookup, required, must start with a\
+            \ letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        permission:
+          description: "Name of the permission to check, required, must start with\
+            \ a letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        subject:
+          $ref: '#/components/schemas/Subject'
+        context:
+          $ref: '#/components/schemas/Context'
+      type: object
+    Stream_result_of_PermissionLookupEntityStreamResponse:
+      example:
+        result:
+          entity_id: entity_id
+        error:
+          code: 0
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/PermissionLookupEntityStreamResponse'
+        error:
+          $ref: '#/components/schemas/Status'
+      title: Stream result of PermissionLookupEntityStreamResponse
+      type: object
+    permissions_lookupSubject_request:
+      description: PermissionLookupSubjectRequest is the request message for the LookupSubject
+        method in the Permission service.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PermissionLookupSubjectRequestMetadata'
+        entity:
+          $ref: '#/components/schemas/Entity'
+        permission:
+          description: "Permission to be checked, can be a permission or relation.\
+            \ Required, and must match the pattern \"^([a-zA-Z][a-zA-Z0-9_]{1,62}[a-zA-Z0-9])$\"\
+            , max 64 bytes."
+          type: string
+        subject_reference:
+          $ref: '#/components/schemas/RelationReference'
+        context:
+          $ref: '#/components/schemas/Context'
+      type: object
+    permissions_subjectPermission_request:
+      description: PermissionSubjectPermissionRequest is the request message for the
+        SubjectPermission method in the Permission service.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PermissionSubjectPermissionRequestMetadata'
+        entity:
+          $ref: '#/components/schemas/Entity'
+        subject:
+          $ref: '#/components/schemas/Subject'
+        context:
+          $ref: '#/components/schemas/Context'
+      type: object
+    RelationshipDeleteRequest:
+      example:
+        filter:
+          subject:
+            ids:
+            - ids
+            - ids
+            type: type
+            relation: relation
+          entity:
+            ids:
+            - ids
+            - ids
+            type: type
+          relation: relation
+      properties:
+        filter:
+          $ref: '#/components/schemas/TupleFilter'
+      title: RelationshipDeleteRequest
+      type: object
+    relationships_write_request:
+      description: Represents a request to write relationship data.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RelationshipWriteRequestMetadata'
+        tuples:
+          description: List of tuples for the request. Must have between 1 and 100
+            items.
+          items:
+            $ref: '#/components/schemas/Tuple'
+          type: array
+      type: object
+    schemas_list_request:
+      description: |-
+        SchemaListRequest is the request message for the List method in the Schema service.
+        It contains tenant_id for which the schemas are to be listed.
+      properties:
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
+      type: object
+    ? It_contains_the_tenant_id_to_identify_the_tenant_and_metadata_of_the_schema_to_be_edited__with_the_corresponding_edits_to_various_entities
+    : properties:
+        metadata:
+          $ref: '#/components/schemas/SchemaPartialWriteRequestMetadata'
+        partials:
+          additionalProperties:
+            $ref: '#/components/schemas/Partials'
+          title: Map of entity name with the values needed to be updated
+          type: object
+      title: |-
+        It contains the tenant_id to identify the tenant and metadata of the schema to be edited,
+        with the corresponding edits to various entities
+      type: object
+    schemas_read_request:
+      description: |-
+        SchemaReadRequest is the request message for the Read method in the Schema service.
+        It contains tenant_id and metadata about the schema to be read.
+      properties:
+        metadata:
+          $ref: '#/components/schemas/SchemaReadRequestMetadata'
+      type: object
+    schemas_write_request:
+      description: |-
+        SchemaWriteRequest is the request message for the Write method in the Schema service.
+        It contains tenant_id and the schema to be written.
+      properties:
+        schema:
+          description: schema is the string representation of the schema to be written.
+          type: string
+      type: object
+    watch_watch_request:
+      description: |-
+        WatchRequest is the request message for the Watch RPC. It contains the
+        details needed to establish a watch stream.
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
+      type: object
+    Stream_result_of_WatchResponse:
+      example:
+        result:
+          changes:
+            snap_token: snap_token
+            data_changes:
+            - tuple:
+                subject:
+                  id: id
+                  type: type
+                  relation: relation
+                entity:
+                  id: id
+                  type: type
+                relation: relation
+              attribute:
+                attribute: attribute
+                value:
+                  '@type': '@type'
+                entity:
+                  id: id
+                  type: type
+              operation: OPERATION_UNSPECIFIED
+            - tuple:
+                subject:
+                  id: id
+                  type: type
+                  relation: relation
+                entity:
+                  id: id
+                  type: type
+                relation: relation
+              attribute:
+                attribute: attribute
+                value:
+                  '@type': '@type'
+                entity:
+                  id: id
+                  type: type
+              operation: OPERATION_UNSPECIFIED
+        error:
+          code: 0
+          details:
+          - '@type': '@type'
+          - '@type': '@type'
+          message: message
+      properties:
+        result:
+          $ref: '#/components/schemas/WatchResponse'
+        error:
+          $ref: '#/components/schemas/Status'
+      title: Stream result of WatchResponse
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      in: header
+      name: Authorization
+      type: apiKey
+x-original-swagger-version: "2.0"
+

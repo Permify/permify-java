@@ -1,0 +1,16 @@
+
+
+# Subject
+
+Subject represents an entity subject with a type, an identifier, and a relation.
+
+## Properties
+
+| Name | Type | Description | Notes |
+|------------ | ------------- | ------------- | -------------|
+|**type** | **String** |  |  [optional] |
+|**id** | **String** |  |  [optional] |
+|**relation** | **String** |  |  [optional] |
+
+
+
