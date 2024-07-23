@@ -155,15 +155,14 @@
             <artifactId>googleapis_googleapis_protocolbuffers_java</artifactId>
             <version>27.2.0.1.20221214150216.75b4300737fb</version>
         </dependency>
-        
+
         <dependency>
             <groupId>build.buf.gen</groupId>
             <artifactId>grpc-ecosystem_grpc-gateway_protocolbuffers_java</artifactId>
             <version>27.2.0.1.20221127060915.a1ecdc58eccd</version>
         </dependency>
 
-
-        
+                
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
