@@ -36,6 +36,12 @@ task updateVersion {
     }
 }
 
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        dependsOn tasks.updateVersion
+    }
+}
+
 if (hasProperty('target') && target == 'android') {
 
     apply plugin: 'com.android.library'
