@@ -2,7 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 group = 'co.permify'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT' // Default version
 
 buildscript {
     repositories {
@@ -18,7 +18,25 @@ repositories {
     mavenCentral()
 }
 
-if(hasProperty('target') && target == 'android') {
+// Task to get the current Git commit hash
+task getCommitHash {
+    doLast {
+        def commitHash = 'git rev-parse --short HEAD'.execute().text.trim()
+        project.ext.commitHash = commitHash
+    }
+}
+
+// Update the version with the commit hash
+task updateVersion {
+    dependsOn getCommitHash
+    doLast {
+        def commitHash = project.ext.commitHash
+        version = "${version}-${commitHash}"
+        println "Updated version to: $version"
+    }
+}
+
+if (hasProperty('target') && target == 'android') {
 
     apply plugin: 'com.android.library'
     apply plugin: 'com.github.dcendents.android-maven'
@@ -36,7 +54,6 @@ if(hasProperty('target') && target == 'android') {
             targetCompatibility JavaVersion.VERSION_1_8
         }
 
-        // Rename the aar correctly
         libraryVariants.all { variant ->
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
@@ -54,7 +71,7 @@ if(hasProperty('target') && target == 'android') {
 
     afterEvaluate {
         android.libraryVariants.all { variant ->
-            def task = project.tasks.create "jar${variant.name.capitalize()}", Jar
+            def task = project.tasks.create("jar${variant.name.capitalize()}", Jar)
             task.description = "Create jar artifact for ${variant.name}"
             task.dependsOn variant.javaCompile
             task.from variant.javaCompile.destinationDirectory
@@ -96,11 +113,13 @@ if(hasProperty('target') && target == 'android') {
             maven(MavenPublication) {
                artifactId = 'permify'
                from components.java
+               // Include the commit hash in the published version
+               version = "${version}"
             }
         }
     }
 
-    task execute(type:JavaExec) {
+    task execute(type: JavaExec) {
        mainClass = System.getProperty('mainClass')
        classpath = sourceSets.main.runtimeClasspath
     }
