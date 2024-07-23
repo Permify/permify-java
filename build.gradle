@@ -2,7 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 group = 'co.permify'
-version = '0.0.1-SNAPSHOT' // Default version
+version = '0.0.1' // Default version
 
 buildscript {
     repositories {
