@@ -225,7 +225,6 @@ Authentication schemes defined for the API:
 
 
 ## Author
-
 hello@permify.co
 
 
