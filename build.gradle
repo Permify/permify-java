@@ -18,30 +18,6 @@ repositories {
     mavenCentral()
 }
 
-// Task to get the current Git commit hash
-task getCommitHash {
-    doLast {
-        def commitHash = 'git rev-parse --short HEAD'.execute().text.trim()
-        project.ext.commitHash = commitHash
-    }
-}
-
-// Update the version with the commit hash
-task updateVersion {
-    dependsOn getCommitHash
-    doLast {
-        def commitHash = project.ext.commitHash
-        version = "${version}-${commitHash}"
-        println "Updated version to: $version"
-    }
-}
-
-gradle.projectsEvaluated {
-    tasks.withType(JavaCompile) {
-        dependsOn tasks.updateVersion
-    }
-}
-
 if (hasProperty('target') && target == 'android') {
 
     apply plugin: 'com.android.library'
@@ -117,10 +93,10 @@ if (hasProperty('target') && target == 'android') {
         }
         publications {
             maven(MavenPublication) {
-               artifactId = 'permify'
-               from components.java
-               // Include the commit hash in the published version
-               version = "${version}"
+                artifactId = 'permify'
+                from components.java
+                def commitHash = 'git rev-parse --short HEAD'.execute().text.trim()
+                version = "${version}-${commitHash}"
             }
         }
     }
