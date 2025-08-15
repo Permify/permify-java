@@ -10,10 +10,11 @@ info:
     name: Apache-2.0 license
     url: https://github.com/Permify/permify/blob/master/LICENSE
   title: Permify API
-  version: v0.9.9
+  version: v1.0.3
 servers:
 - url: /
 tags:
+- name: Health
 - name: Permission
 - name: Watch
 - name: Schema
@@ -21,6 +22,37 @@ tags:
 - name: Bundle
 - name: Tenancy
 paths:
+  /healthz:
+    get:
+      operationId: health.check
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+          description: An unexpected error response.
+      summary: health api
+      tags:
+      - Health
+      x-codeSamples:
+      - label: ""
+        lang: ""
+        source: ""
+      - label: ""
+        lang: ""
+        source: ""
+      - label: ""
+        lang: ""
+        source: ""
+      x-accepts:
+      - application/json
   /v1/tenants/create:
     post:
       operationId: tenants.create
@@ -28,7 +60,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TenantCreateRequest'
+              $ref: "#/components/schemas/TenantCreateRequest"
         description: TenantCreateRequest is the message used for the request to create
           a tenant.
         required: true
@@ -37,13 +69,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantCreateResponse'
+                $ref: "#/components/schemas/TenantCreateResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: create tenant
       tags:
@@ -52,8 +84,8 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Tenancy.Create(context.Background(), &v1.TenantCreateRequest {
-              Id: ""
+          rr, err := client.Tenancy.Create(context.Background(), &v1.TenantCreateRequest{
+              Id:   "",
               Name: ""
           })
       - label: node
@@ -85,7 +117,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TenantListRequest'
+              $ref: "#/components/schemas/TenantListRequest"
         description: TenantListRequest is the message used for the request to list
           all tenants.
         required: true
@@ -94,13 +126,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantListResponse'
+                $ref: "#/components/schemas/TenantListResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: list tenants
       tags:
@@ -126,7 +158,7 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/list' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-              "page_size": "10",
+              "page_size": 20,
               "continuous_token": ""
           }'
       x-codegen-request-body-name: body
@@ -138,23 +170,25 @@ paths:
       operationId: tenants.delete
       parameters:
       - description: id is the unique identifier of the tenant to be deleted.
+        explode: false
         in: path
         name: id
         required: true
         schema:
           type: string
+        style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantDeleteResponse'
+                $ref: "#/components/schemas/TenantDeleteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: delete tenant
       tags:
@@ -163,7 +197,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Tenancy.Delete(context.Background(), &v1.TenantDeleteRequest {
+          rr, err := client.Tenancy.Delete(context.Background(), &v1.TenantDeleteRequest{
               Id: ""
           })
       - label: node
@@ -187,29 +221,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/bundle_delete_request'
+              $ref: "#/components/schemas/Bundle.DeleteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BundleDeleteResponse'
+                $ref: "#/components/schemas/BundleDeleteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: delete bundle
       tags:
@@ -218,7 +254,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Bundle.Delete(context.Background(), &v1.BundleDeleteRequest{
+          rr, err := client.Bundle.Delete(context.Background(), &v1.BundleDeleteRequest{
               TenantId: "t1",
               Name:     "organization_created",
           })
@@ -237,7 +273,7 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/bundle/delete' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-              "name": "organization_created",
+              "name": "organization_created"
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -251,29 +287,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/bundle_read_request'
+              $ref: "#/components/schemas/Bundle.ReadBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BundleReadResponse'
+                $ref: "#/components/schemas/BundleReadResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: read bundle
       tags:
@@ -282,7 +320,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Bundle.Read(context.Background(), &v1.BundleReadRequest{
+          rr, err := client.Bundle.Read(context.Background(), &v1.BundleReadRequest{
               TenantId: "t1",
               Name:     "organization_created",
           })
@@ -301,7 +339,7 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/bundle/read' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-              "name": "organization_created",
+              "name": "organization_created"
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -315,29 +353,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/bundle_write_request'
+              $ref: "#/components/schemas/Bundle.WriteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BundleWriteResponse'
+                $ref: "#/components/schemas/BundleWriteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: write bundle
       tags:
@@ -405,7 +445,7 @@ paths:
           --data-raw '{
               "bundles": [
                   {
-                      "name": "organization_created"
+                      "name": "organization_created",
                       "arguments": [
                           "creatorID",
                           "organizationID"
@@ -414,15 +454,15 @@ paths:
                           {
                               "relationships_write": [
                                   "organization:{{.organizationID}}#admin@user:{{.creatorID}}",
-                                  "organization:{{.organizationID}}#manager@user:{{.creatorID}}",
+                                  "organization:{{.organizationID}}#manager@user:{{.creatorID}}"
                               ],
                               "attributes_write": [
-                                  "organization:{{.organizationID}}$public|boolean:false",
-                              ],
-                          },
-                      ],
-                  },
-              ],
+                                  "organization:{{.organizationID}}$public|boolean:false"
+                              ]
+                          }
+                      ]
+                  }
+              ]
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -436,29 +476,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/data_attributes_read_request'
+              $ref: "#/components/schemas/ReadAttributesBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AttributeReadResponse'
+                $ref: "#/components/schemas/AttributeReadResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: read attributes
       tags:
@@ -467,17 +509,18 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Data.ReadAttributes(context.Background(), & v1.Data.AttributeReadRequest {
+          rr, err := client.Data.ReadAttributes(context.Background(), &v1.Data.AttributeReadRequest{
               TenantId: "t1",
-              Metadata: &v1.Data.AttributeReadRequestMetadata {
-                  SnapToken: ""
+              Metadata: &v1.Data.AttributeReadRequestMetadata{
+                  SnapToken: "",
               },
-              Filter: &v1.AttributeFilter {
-                  Entity: &v1.EntityFilter {
-                  Type: "organization",
-                  Ids: []string {"1"} ,
+              Filter: &v1.AttributeFilter{
+                  Entity: &v1.EntityFilter{
+                      Type: "organization",
+                      Ids: []string{"1"},
+                  },
+                  Attributes: []string{"private"},
               },
-              Attributes: []string {"private"},
           })
       - label: node
         lang: javascript
@@ -485,7 +528,7 @@ paths:
           client.data.readAttributes({
             tenantId: "t1",
             metadata: {
-               snap_token: "",
+              snap_token: "",
             },
             filter: {
               entity: {
@@ -495,11 +538,11 @@ paths:
                 ]
               },
               attributes: [
-                  "private"
+                "private"
               ],
             }
           }).then((response) => {
-              // handle response
+            // handle response
           })
       - label: cURL
         lang: curl
@@ -507,19 +550,19 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/attributes/read' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-            metadata: {
-               snap_token: "",
+            "metadata": {
+              "snap_token": ""
             },
-            filter: {
-              entity: {
-                type: "organization",
-                ids: [
+            "filter": {
+              "entity": {
+                "type": "organization",
+                "ids": [
                   "1"
                 ]
               },
-              attributes: [
-                  "private"
-                ],
+              "attributes": [
+                "private"
+              ]
             }
           }'
       x-codegen-request-body-name: body
@@ -534,29 +577,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/data_delete_request'
+              $ref: "#/components/schemas/Data.DeleteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataDeleteResponse'
+                $ref: "#/components/schemas/DataDeleteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: delete data
       tags:
@@ -565,22 +610,23 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Data.Delete(context.Background(), & v1.DataDeleteRequest {
+          rr, err := client.Data.Delete(context.Background(), &v1.DataDeleteRequest{
               TenantId: "t1",
-              Metadata: &v1.DataDeleteRequestMetadata {
-                  SnapToken: ""
+              Metadata: &v1.DataDeleteRequestMetadata{
+                  SnapToken: "",
               },
-              TupleFilter: &v1.TupleFilter {
-                  Entity: &v1.EntityFilter {
-                  Type: "organization",
-                  Ids: []string {"1"} ,
-              },
-              Relation: "admin",
-              Subject: &v1.SubjectFilter {
-                  Type: "user",
-                  Id: []string {"1"},
-                  Relation: ""
-              }}
+              TupleFilter: &v1.TupleFilter{
+                  Entity: &v1.EntityFilter{
+                      Type: "organization",
+                      Ids: []string{"1"},
+                  },
+                  Relation: "admin",
+                  Subject: &v1.SubjectFilter{
+                      Type: "user",
+                      Id: []string{"1"},
+                      Relation: ""
+                  }
+              }
           })
       - label: node
         lang: javascript
@@ -588,7 +634,7 @@ paths:
           client.data.delete({
             tenantId: "t1",
             metadata: {
-               snap_token: "",
+              snap_token: "",
             },
             tupleFilter: {
               entity: {
@@ -607,7 +653,7 @@ paths:
               }
             }
           }).then((response) => {
-              // handle response
+            // handle response
           })
       - label: cURL
         lang: curl
@@ -615,7 +661,7 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/delete' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-            "tupleFilter": {
+            "tuple_filter": {
               "entity": {
                 "type": "organization",
                 "ids": [
@@ -631,6 +677,7 @@ paths:
                 "relation": ""
               }
             },
+            "attribute_filter": {}
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -644,29 +691,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/data_relationships_read_request'
+              $ref: "#/components/schemas/ReadRelationshipsBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RelationshipReadResponse'
+                $ref: "#/components/schemas/RelationshipReadResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: read relationships
       tags:
@@ -675,22 +724,23 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Data.ReadRelationships(context.Background(), & v1.Data.RelationshipReadRequest {
+          rr, err := client.Data.ReadRelationships(context.Background(), &v1.Data.RelationshipReadRequest{
               TenantId: "t1",
-              Metadata: &v1.Data.RelationshipReadRequestMetadata {
+              Metadata: &v1.Data.RelationshipReadRequestMetadata{
                   SnapToken: ""
               },
-              Filter: &v1.TupleFilter {
-                  Entity: &v1.EntityFilter {
-                  Type: "organization",
-                  Ids: []string {"1"} ,
-              },
-              Relation: "member",
-              Subject: &v1.SubjectFilter {
-                  Type: "",
-                  Id: []string {""},
-                  Relation: ""
-              }}
+              Filter: &v1.TupleFilter{
+                  Entity: &v1.EntityFilter{
+                      Type: "organization",
+                      Ids: []string{"1"},
+                  },
+                  Relation: "member",
+                  Subject: &v1.SubjectFilter{
+                      Type: "",
+                      Id: []string{""},
+                      Relation: ""
+                  }
+              }
           })
       - label: node
         lang: javascript
@@ -698,7 +748,7 @@ paths:
           client.data.readRelationships({
             tenantId: "t1",
             metadata: {
-               snap_token: "",
+              snap_token: "",
             },
             filter: {
               entity: {
@@ -715,7 +765,7 @@ paths:
               }
             }
           }).then((response) => {
-              // handle response
+            // handle response
           })
       - label: cURL
         lang: curl
@@ -723,21 +773,21 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/relationships/read' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-            metadata: {
-               snap_token: "",
+            "metadata": {
+              "snap_token": ""
             },
-            filter: {
-              entity: {
-                type: "organization",
-                ids: [
+            "filter": {
+              "entity": {
+                "type": "organization",
+                "ids": [
                   "1"
                 ]
               },
-              relation: "member",
-              subject: {
-                type: "",
-                ids: [],
-                relation: ""
+              "relation": "member",
+              "subject": {
+                "type": "",
+                "ids": [],
+                "relation": ""
               }
             }
           }'
@@ -753,29 +803,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/bundle_run_request'
+              $ref: "#/components/schemas/RunBundleBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BundleRunResponse'
+                $ref: "#/components/schemas/BundleRunResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: run bundle
       tags:
@@ -784,7 +836,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          rr, err: = client.Data.RunBundle(context.Background(), &v1.BundleRunRequest{
+          rr, err := client.Data.RunBundle(context.Background(), &v1.BundleRunRequest{
               TenantId: "t1",
               Name:     "organization_created",
               Arguments: map[string]string{
@@ -814,7 +866,7 @@ paths:
               "name": "organization_created",
               "arguments": {
                   "creatorID": "564",
-                  "organizationID": "789",
+                  "organizationID": "789"
               }
           }'
       x-codegen-request-body-name: body
@@ -829,29 +881,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/data_write_request'
+              $ref: "#/components/schemas/Data.WriteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataWriteResponse'
+                $ref: "#/components/schemas/DataWriteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: write data
       tags:
@@ -869,11 +923,11 @@ paths:
           }
 
           cr, err := client.Data.Write(context.Background(), &v1.DataWriteRequest{
-              TenantId: "t1",,
+              TenantId: "t1",
               Metadata: &v1.DataWriteRequestMetadata{
                   SchemaVersion: "",
               },
-              Tuples: []*v1.Attribute{
+              Tuples: []*v1.Tuple{
                   {
                       Entity: &v1.Entity{
                           Type: "document",
@@ -941,22 +995,21 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/data/write' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-          {
               "metadata": {
                   "schema_version": ""
               },
               "tuples": [
-                {
-                  "entity": {
-                    "type": "document",
-                    "id": "1"
-                  },
-                  "relation": "editor",
-                  "subject": {
-                    "type": "user",
-                    "id": "1"
+                  {
+                      "entity": {
+                          "type": "document",
+                          "id": "1"
+                      },
+                      "relation": "editor",
+                      "subject": {
+                          "type": "user",
+                          "id": "1"
+                      }
                   }
-              }
               ],
               "attributes": [
                   {
@@ -971,7 +1024,6 @@ paths:
                       }
                   }
               ]
-          }
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -985,29 +1037,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_check_request'
+              $ref: "#/components/schemas/Permission.CheckBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionCheckResponse'
+                $ref: "#/components/schemas/PermissionCheckResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: check api
       tags:
@@ -1032,13 +1086,12 @@ paths:
                   Type: "user",
                   Id: "1",
               },
-
-              if (cr.can === PermissionCheckResponse_Result.RESULT_ALLOWED) {
-                  // RESULT_ALLOWED
-              } else {
-                  // RESULT_DENIED
-              }
           })
+          if cr.Can == v1.PermissionCheckResponse_Result_RESULT_ALLOWED {
+              // RESULT_ALLOWED
+          } else {
+              // RESULT_DENIED
+          }
       - label: node
         lang: javascript
         source: "client.permission.check({\n    tenantId: \"t1\", \n    metadata:\
@@ -1055,7 +1108,7 @@ paths:
           curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/permissions/check' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-            "metadata":{
+            "metadata": {
               "snap_token": "",
               "schema_version": "",
               "depth": 20
@@ -1069,7 +1122,7 @@ paths:
               "type": "user",
               "id": "1",
               "relation": ""
-            },
+            }
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -1083,29 +1136,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_expand_request'
+              $ref: "#/components/schemas/Permission.ExpandBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionExpandResponse'
+                $ref: "#/components/schemas/PermissionExpandResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: expand api
       tags:
@@ -1114,7 +1169,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          cr, err: = client.Permission.Expand(context.Background(), &v1.PermissionExpandRequest{
+          cr, err := client.Permission.Expand(context.Background(), &v1.PermissionExpandRequest{
               TenantId: "t1",
               Metadata: &v1.PermissionExpandRequestMetadata{
                   SnapToken: "",
@@ -1130,8 +1185,8 @@ paths:
         lang: javascript
         source: |-
           client.permission.expand({
-            tenantId: "t1",
-            metadata: {
+              tenantId: "t1",
+              metadata: {
                   snapToken: "",
                   schemaVersion: ""
               },
@@ -1169,29 +1224,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_lookupEntity_request'
+              $ref: "#/components/schemas/LookupEntityBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionLookupEntityResponse'
+                $ref: "#/components/schemas/PermissionLookupEntityResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: lookup entity
       tags:
@@ -1200,19 +1257,21 @@ paths:
       - label: go
         lang: go
         source: |-
-          cr, err: = client.Permission.LookupEntity(context.Background(), & v1.PermissionLookupEntityRequest {
+          cr, err := client.Permission.LookupEntity(context.Background(), &v1.PermissionLookupEntityRequest{
               TenantId: "t1",
-              Metadata: & v1.PermissionLookupEntityRequestMetadata {
-                  SnapToken: ""
-                  SchemaVersion: ""
+              Metadata: &v1.PermissionLookupEntityRequestMetadata{
+                  SnapToken: "",
+                  SchemaVersion: "",
                   Depth: 20,
               },
               EntityType: "document",
               Permission: "edit",
-              Subject: & v1.Subject {
+              Subject: &v1.Subject{
                   Type: "user",
                   Id: "1",
               }
+              PageSize: 20,
+              ContinuousToken: "",
           })
       - label: node
         lang: javascript
@@ -1229,7 +1288,9 @@ paths:
               subject: {
                   type: "user",
                   id: "1"
-              }
+              },
+              page_size: 20,
+              continuous_token: ""
           }).then((response) => {
               console.log(response.entity_ids)
           })
@@ -1249,7 +1310,9 @@ paths:
             "subject": {
               "type":"user",
               "id":"1"
-            }
+            },
+            "page_size": 20,
+            "continuous_token": "",
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -1263,29 +1326,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_lookupEntity_request'
+              $ref: "#/components/schemas/LookupEntityStreamBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Stream_result_of_PermissionLookupEntityStreamResponse'
+                $ref: "#/components/schemas/Stream_result_of_PermissionLookupEntityStreamResponse"
           description: A successful response.(streaming responses)
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: lookup entity stream
       tags:
@@ -1293,13 +1358,33 @@ paths:
       x-codeSamples:
       - label: go
         lang: go
-        source: "str, err: = client.Permission.LookupEntityStream(context.Background(),\
-          \ &v1.PermissionLookupEntityRequest {\n    Metadata: &v1.PermissionLookupEntityRequestMetadata\
-          \ {\n        SnapToken: \"\", \n        SchemaVersion: \"\" \n        Depth:\
-          \ 50,\n    },\n    EntityType: \"document\",\n    Permission: \"view\",\n\
-          \    Subject: &v1.Subject {\n        Type: \"user\",\n        Id: \"1\"\
-          ,\n    },\n})\n\n// handle stream response\nfor {\n    res, err: = str.Recv()\n\
-          \n    if err == io.EOF {\n        break\n    }\n\n    // res.EntityId\n}"
+        source: |-
+          str, err := client.Permission.LookupEntityStream(context.Background(), &v1.PermissionLookupEntityRequest{
+              Metadata: &v1.PermissionLookupEntityRequestMetadata{
+                  SnapToken: "",
+                  SchemaVersion: "",
+                  Depth: 50,
+              },
+              EntityType: "document",
+              Permission: "view",
+              Subject: &v1.Subject{
+                  Type: "user",
+                  Id: "1",
+              },
+              PageSize: 20,
+              ContinuousToken: "",
+          })
+
+          // handle stream response
+          for {
+              res, err := str.Recv()
+
+              if err == io.EOF {
+                  break
+              }
+
+              // res.EntityId
+          }
       - label: node
         lang: javascript
         source: |-
@@ -1309,7 +1394,7 @@ paths:
           function main() {
               const client = new permify.grpc.newClient({
                   endpoint: "localhost:3478",
-              })
+              });
 
               let res = client.permission.lookupEntityStream({
                   metadata: {
@@ -1322,10 +1407,12 @@ paths:
                   subject: {
                       type: "user",
                       id: "1"
-                  }
-              })
+                  },
+                  page_size: 20,
+                  continuous_token: ""
+              });
 
-              handle(res)
+              handle(res);
           }
 
           async function handle(res: AsyncIterable<PermissionLookupEntityStreamResponse>) {
@@ -1345,29 +1432,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_lookupSubject_request'
+              $ref: "#/components/schemas/LookupSubjectBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionLookupSubjectResponse'
+                $ref: "#/components/schemas/PermissionLookupSubjectResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: lookup-subject
       tags:
@@ -1376,7 +1465,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          cr, err: = client.Permission.LookupSubject(context.Background(), &v1.PermissionLookupSubjectRequest {
+          cr, err := client.Permission.LookupSubject(context.Background(), &v1.PermissionLookupSubjectRequest{
               TenantId: "t1",
               Metadata: &v1.PermissionLookupSubjectRequestMetadata{
                   SnapToken: "",
@@ -1391,7 +1480,9 @@ paths:
               SubjectReference: &v1.RelationReference{
                   Type: "user",
                   Relation: "",
-              }
+              },
+              PageSize: 20,
+              ContinuousToken: "",
           })
       - label: node
         lang: javascript
@@ -1400,18 +1491,20 @@ paths:
               tenantId: "t1",
               metadata: {
                   snapToken: "",
-                  schemaVersion: ""
+                  schemaVersion: "",
                   depth: 20,
               },
-              Entity: {
-                  Type: "document",
-                  Id: "1",
+              entity: {
+                  type: "document",
+                  id: "1",
               },
               permission: "edit",
               subject_reference: {
                   type: "user",
                   relation: ""
-              }
+              },
+              page_size: 10,
+              continuous_token: ""
           }).then((response) => {
               console.log(response.subject_ids)
           })
@@ -1423,18 +1516,20 @@ paths:
           --data-raw '{
             "metadata":{
               "snap_token": "",
-              "schema_version": ""
+              "schema_version": "",
               "depth": 20,
             },
             "entity": {
-              type: "document",
-              id: "1'
+              "type": "document",
+              "id": "1"
             },
             "permission": "edit",
             "subject_reference": {
               "type": "user",
               "relation": ""
-            }
+            },
+             page_size: 20,
+             continuous_token: ""
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -1448,29 +1543,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/permissions_subjectPermission_request'
+              $ref: "#/components/schemas/SubjectPermissionBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PermissionSubjectPermissionResponse'
+                $ref: "#/components/schemas/PermissionSubjectPermissionResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: subject permission
       tags:
@@ -1479,31 +1576,45 @@ paths:
       - label: go
         lang: go
         source: |-
-          cr, err: = client.Permission.SubjectPermission(context.Background(), &v1.PermissionSubjectPermissionRequest {
+          cr, err := client.Permission.SubjectPermission(context.Background(), &v1.PermissionSubjectPermissionRequest{
               TenantId: "t1",
-              Metadata: &v1.PermissionSubjectPermissionRequestMetadata {
+              Metadata: &v1.PermissionSubjectPermissionRequestMetadata{
                   SnapToken: "",
                   SchemaVersion: "",
                   OnlyPermission: false,
                   Depth: 20,
               },
-              Entity: &v1.Entity {
+              Entity: &v1.Entity{
                   Type: "repository",
                   Id: "1",
               },
-              Subject: &v1.Subject {
+              Subject: &v1.Subject{
                   Type: "user",
                   Id: "1",
               },
           })
       - label: node
         lang: javascript
-        source: "client.permission.subjectPermission({\n    tenantId: \"t1\", \n \
-          \   metadata: {\n        snapToken: \"\",\n        schemaVersion: \"\",\n\
-          \        onlyPermission: true,\n        depth: 20\n    },\n    entity: {\n\
-          \        type: \"repository\",\n        id: \"1\"\n    },\n    subject:\
-          \ {\n        type: \"user\",\n        id: \"1\"\n    }\n}).then((response)\
-          \ => {\n    console.log(response);\n})"
+        source: |-
+          client.permission.subjectPermission({
+              tenantId: "t1",
+              metadata: {
+                  snapToken: "",
+                  schemaVersion: "",
+                  onlyPermission: true,
+                  depth: 20
+              },
+              entity: {
+                  type: "repository",
+                  id: "1"
+              },
+              subject: {
+                  type: "user",
+                  id: "1"
+              }
+          }).then((response) => {
+              console.log(response);
+          })
       - label: cURL
         lang: curl
         source: |-
@@ -1524,7 +1635,7 @@ paths:
               "type": "user",
               "id": "1",
               "relation": ""
-            },
+            }
           }'
       x-codegen-request-body-name: body
       x-content-type: application/json
@@ -1538,29 +1649,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RelationshipDeleteRequest'
+              $ref: "#/components/schemas/DeleteRelationshipsBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RelationshipDeleteResponse'
+                $ref: "#/components/schemas/RelationshipDeleteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: delete relationships
       tags:
@@ -1577,29 +1690,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/relationships_write_request'
+              $ref: "#/components/schemas/WriteRelationshipsBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RelationshipWriteResponse'
+                $ref: "#/components/schemas/RelationshipWriteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: write relationships
       tags:
@@ -1616,29 +1731,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/schemas_list_request'
+              $ref: "#/components/schemas/Schema.ListBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaListResponse'
+                $ref: "#/components/schemas/SchemaListResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: list schema
       tags:
@@ -1647,9 +1764,9 @@ paths:
       - label: go
         lang: go
         source: |-
-          sr, err: = client.Schema.List(context.Background(), &v1.SchemaListRequest {
+          sr, err := client.Schema.List(context.Background(), &v1.SchemaListRequest{
               TenantId: "t1",
-              PageSize: "10",
+              PageSize: 20,
               ContinuousToken: "",
           })
       - label: node
@@ -1662,10 +1779,10 @@ paths:
       - label: cURL
         lang: curl
         source: |-
-          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/schemas/read' \
+          curl --location --request POST 'localhost:3476/v1/tenants/{tenant_id}/schemas/list' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-              "page_size": "10",
+              "page_size": 20,
               "continuous_token": ""
           }'
       x-codegen-request-body-name: body
@@ -1679,29 +1796,31 @@ paths:
       - description: |-
           tenant_id is a string that identifies the tenant. It must match the pattern "[a-zA-Z0-9-,]+",
           be a maximum of 64 bytes, and must not be empty.
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/It_contains_the_tenant_id_to_identify_the_tenant_and_metadata_of_the_schema_to_be_edited__with_the_corresponding_edits_to_various_entities'
+              $ref: "#/components/schemas/PartialWriteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaPartialWriteResponse'
+                $ref: "#/components/schemas/SchemaPartialWriteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: partially update your authorization model
       tags:
@@ -1718,29 +1837,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/schemas_read_request'
+              $ref: "#/components/schemas/Schema.ReadBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaReadResponse'
+                $ref: "#/components/schemas/SchemaReadResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: read schema
       tags:
@@ -1749,7 +1870,7 @@ paths:
       - label: go
         lang: go
         source: |-
-          sr, err: = client.Schema.Read(context.Background(), &v1.SchemaReadRequest {
+          sr, err := client.Schema.Read(context.Background(), &v1.SchemaReadRequest{
               TenantId: "t1",
               Metadata: &v1.SchemaReadRequestMetadata{
                   SchemaVersion: "cnbe6se5fmal18gpc66g",
@@ -1761,9 +1882,9 @@ paths:
           let res = client.schema.read({
               tenantId: "t1",
               metadata: {
-              schemaVersion: swResponse.schemaVersion,
+                  schemaVersion: swResponse.schemaVersion,
               },
-              })
+          })
       - label: cURL
         lang: curl
         source: |-
@@ -1786,29 +1907,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/schemas_write_request'
+              $ref: "#/components/schemas/Schema.WriteBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchemaWriteResponse'
+                $ref: "#/components/schemas/SchemaWriteResponse"
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: write schema
       tags:
@@ -1817,10 +1940,27 @@ paths:
       - label: go
         lang: go
         source: |-
-          sr, err: = client.Schema.Write(context.Background(), &v1.SchemaWriteRequest {
+          sr, err := client.Schema.Write(context.Background(), &v1.SchemaWriteRequest{
               TenantId: "t1",
               Schema: `
-              "entity user {}\n\n    entity organization {\n\n        relation admin @user\n        relation member @user\n\n        action create_repository = (admin or member)\n        action delete = admin\n    }\n\n    entity repository {\n\n        relation owner @user\n        relation parent @organization\n\n        action push = owner\n        action read = (owner and (parent.admin and parent.member))\n        action delete = (parent.member and (parent.admin or owner))\n    }"
+              entity user {}
+
+              entity organization {
+                  relation admin @user
+                  relation member @user
+
+                  action create_repository = (admin or member)
+                  action delete = admin
+              }
+
+              entity repository {
+                  relation owner @user
+                  relation parent @organization
+
+                  action push = owner
+                  action read = (owner and (parent.admin and parent.member))
+                  action delete = (parent.member and (parent.admin or owner))
+              }
               `,
           })
       - label: node
@@ -1829,7 +1969,24 @@ paths:
           client.schema.write({
               tenantId: "t1",
               schema: `
-              "entity user {}\n\n    entity organization {\n\n        relation admin @user\n        relation member @user\n\n        action create_repository = (admin or member)\n        action delete = admin\n    }\n\n    entity repository {\n\n        relation owner @user\n        relation parent @organization\n\n        action push = owner\n        action read = (owner and (parent.admin and parent.member))\n        action delete = (parent.member and (parent.admin or owner))\n    }"
+              entity user {}
+
+              entity organization {
+                  relation admin @user
+                  relation member @user
+
+                  action create_repository = (admin or member)
+                  action delete = admin
+              }
+
+              entity repository {
+                  relation owner @user
+                  relation parent @organization
+
+                  action push = owner
+                  action read = (owner and (parent.admin and parent.member))
+                  action delete = (parent.member and (parent.admin or owner))
+              }
               `
           }).then((response) => {
               // handle response
@@ -1854,29 +2011,31 @@ paths:
           \ (have only one tenant) use pre-inserted tenant <code>t1</code> for this\
           \ field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max\
           \ 64 bytes."
+        explode: false
         in: path
         name: tenant_id
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/watch_watch_request'
+              $ref: "#/components/schemas/WatchBody"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Stream_result_of_WatchResponse'
+                $ref: "#/components/schemas/Stream_result_of_WatchResponse"
           description: A successful response.(streaming responses)
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: "#/components/schemas/Status"
           description: An unexpected error response.
       summary: watch changes
       tags:
@@ -1908,14 +2067,14 @@ paths:
           function main() {
               const client = new permify.grpc.newClient({
                   endpoint: "localhost:3478",
-              })
+              });
 
               let res = client.watch.watch({
-                    tenantId: "t1",
+                  tenantId: "t1",
                   snapToken: ""
-              })
+              });
 
-              handle(res)
+              handle(res);
           }
 
           async function handle(res: AsyncIterable<WatchResponse>) {
@@ -1943,7 +2102,7 @@ components:
         parameterTypes:
           description: Parameter types for this abstract type.
           items:
-            $ref: '#/components/schemas/v1alpha1.Type'
+            $ref: "#/components/schemas/v1alpha1.Type"
           type: array
       type: object
     Any:
@@ -2080,9 +2239,9 @@ components:
           name: name
       properties:
         computedAttribute:
-          $ref: '#/components/schemas/ComputedAttribute'
+          $ref: "#/components/schemas/ComputedAttribute"
         contextAttribute:
-          $ref: '#/components/schemas/ContextAttribute'
+          $ref: "#/components/schemas/ContextAttribute"
       type: object
     Attribute:
       description: Attribute represents an attribute of an entity with a specific
@@ -2096,12 +2255,12 @@ components:
           type: type
       properties:
         entity:
-          $ref: '#/components/schemas/Entity'
+          $ref: "#/components/schemas/Entity"
         attribute:
           title: Name of the attribute
           type: string
         value:
-          $ref: '#/components/schemas/Any'
+          $ref: "#/components/schemas/Any"
       type: object
     AttributeDefinition:
       description: The AttributeDefinition message provides detailed information about
@@ -2115,14 +2274,23 @@ components:
             \ pattern and has a maximum byte size."
           type: string
         type:
-          $ref: '#/components/schemas/AttributeType'
+          $ref: "#/components/schemas/AttributeType"
       type: object
     AttributeFilter:
       description: AttributeFilter is used to filter attributes based on the entity
         and attribute names.
+      example:
+        attributes:
+        - attributes
+        - attributes
+        entity:
+          ids:
+          - ids
+          - ids
+          type: type
       properties:
         entity:
-          $ref: '#/components/schemas/EntityFilter'
+          $ref: "#/components/schemas/EntityFilter"
         attributes:
           items:
             type: string
@@ -2133,6 +2301,8 @@ components:
       description: |-
         AttributeReadRequestMetadata defines the structure for the metadata of an attribute read request.
         It includes the snap_token associated with a particular state of the database.
+      example:
+        snap_token: snap_token
       properties:
         snap_token:
           description: "The snap token to avoid stale cache, see more details on [Snap\
@@ -2163,7 +2333,7 @@ components:
           description: attributes is a list of the attributes retrieved in the read
             operation.
           items:
-            $ref: '#/components/schemas/Attribute'
+            $ref: "#/components/schemas/Attribute"
           type: array
         continuous_token:
           description: continuous_token is used in the case of paginated reads to
@@ -2171,6 +2341,7 @@ components:
           type: string
       type: object
     AttributeType:
+      default: ATTRIBUTE_TYPE_UNSPECIFIED
       description: |-
         Enumerates the types of attribute.
 
@@ -2194,6 +2365,31 @@ components:
       - ATTRIBUTE_TYPE_DOUBLE
       - ATTRIBUTE_TYPE_DOUBLE_ARRAY
       type: string
+    Bundle.DeleteBody:
+      description: |-
+        BundleDeleteRequest is used to request the deletion of a bundle.
+        It contains the tenant_id to specify the tenant and the name of the bundle to be deleted.
+      properties:
+        name:
+          description: Name of the bundle to be deleted.
+          type: string
+      type: object
+    Bundle.ReadBody:
+      properties:
+        name:
+          type: string
+      type: object
+    Bundle.WriteBody:
+      description: |-
+        BundleWriteRequest is used to request the writing of a bundle.
+        It contains the tenant_id to identify the tenant and the Bundles object.
+      properties:
+        bundles:
+          description: Contains the bundle data to be written.
+          items:
+            $ref: "#/components/schemas/DataBundle"
+          type: array
+      type: object
     BundleDeleteResponse:
       example:
         name: name
@@ -2235,7 +2431,7 @@ components:
           - arguments
       properties:
         bundle:
-          $ref: '#/components/schemas/DataBundle'
+          $ref: "#/components/schemas/DataBundle"
       type: object
     BundleRunResponse:
       description: |-
@@ -2289,58 +2485,7 @@ components:
           positions:
             key: 1
           macroCalls:
-            key:
-              identExpr:
-                name: name
-              selectExpr:
-                field: field
-                testOnly: true
-                operand: null
-              comprehensionExpr:
-                result: null
-                loopCondition: null
-                accuVar: accuVar
-                accuInit: null
-                iterVar: iterVar
-                iterRange: null
-                loopStep: null
-              structExpr:
-                messageName: messageName
-                entries:
-                - fieldKey: fieldKey
-                  mapKey: null
-                  id: id
-                  value: null
-                  optionalEntry: true
-                - fieldKey: fieldKey
-                  mapKey: null
-                  id: id
-                  value: null
-                  optionalEntry: true
-              id: id
-              callExpr:
-                args:
-                - null
-                - null
-                function: function
-                target: null
-              listExpr:
-                elements:
-                - null
-                - null
-                optionalIndices:
-                - 5
-                - 5
-              constExpr:
-                int64Value: int64Value
-                uint64Value: uint64Value
-                stringValue: stringValue
-                durationValue: durationValue
-                timestampValue: 2000-01-23T04:56:07.000+00:00
-                boolValue: true
-                doubleValue: 0.8008281904610115
-                bytesValue: bytesValue
-                nullValue: nullValue
+            key: null
         typeMap:
           key:
             primitive: PRIMITIVE_TYPE_UNSPECIFIED
@@ -2384,62 +2529,11 @@ components:
               doubleValue: 0.8008281904610115
               bytesValue: bytesValue
               nullValue: nullValue
-        expr:
-          identExpr:
-            name: name
-          selectExpr:
-            field: field
-            testOnly: true
-            operand: null
-          comprehensionExpr:
-            result: null
-            loopCondition: null
-            accuVar: accuVar
-            accuInit: null
-            iterVar: iterVar
-            iterRange: null
-            loopStep: null
-          structExpr:
-            messageName: messageName
-            entries:
-            - fieldKey: fieldKey
-              mapKey: null
-              id: id
-              value: null
-              optionalEntry: true
-            - fieldKey: fieldKey
-              mapKey: null
-              id: id
-              value: null
-              optionalEntry: true
-          id: id
-          callExpr:
-            args:
-            - null
-            - null
-            function: function
-            target: null
-          listExpr:
-            elements:
-            - null
-            - null
-            optionalIndices:
-            - 5
-            - 5
-          constExpr:
-            int64Value: int64Value
-            uint64Value: uint64Value
-            stringValue: stringValue
-            durationValue: durationValue
-            timestampValue: 2000-01-23T04:56:07.000+00:00
-            boolValue: true
-            doubleValue: 0.8008281904610115
-            bytesValue: bytesValue
-            nullValue: nullValue
+        expr: "{}"
       properties:
         referenceMap:
           additionalProperties:
-            $ref: '#/components/schemas/v1alpha1.Reference'
+            $ref: "#/components/schemas/v1alpha1.Reference"
           description: |-
             A map from expression ids to resolved references.
 
@@ -2459,7 +2553,7 @@ components:
           type: object
         typeMap:
           additionalProperties:
-            $ref: '#/components/schemas/v1alpha1.Type'
+            $ref: "#/components/schemas/v1alpha1.Type"
           description: |-
             A map from expression ids to types.
 
@@ -2468,7 +2562,7 @@ components:
             space.
           type: object
         sourceInfo:
-          $ref: '#/components/schemas/SourceInfo'
+          $ref: "#/components/schemas/SourceInfo"
         exprVersion:
           description: |-
             The expr version indicates the major / minor version number of the `expr`
@@ -2480,7 +2574,23 @@ components:
             the same or similar transformations prior to evaluation.
           type: string
         expr:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
       type: object
     Child:
       description: Child represents a node in the permission tree.
@@ -2513,9 +2623,9 @@ components:
           - null
       properties:
         leaf:
-          $ref: '#/components/schemas/Leaf'
+          $ref: "#/components/schemas/Leaf"
         rewrite:
-          $ref: '#/components/schemas/Rewrite'
+          $ref: "#/components/schemas/Rewrite"
       type: object
     Comprehension:
       description: |-
@@ -2545,31 +2655,103 @@ components:
         messages `has(m.x)` is defined as 'defined, but not set`. For proto3, the
         macro tests whether the property is set to its default. For map and struct
         types, the macro tests whether the property `x` is defined on `m`.
-      example:
-        result: null
-        loopCondition: null
-        accuVar: accuVar
-        accuInit: null
-        iterVar: iterVar
-        iterRange: null
-        loopStep: null
       properties:
         iterVar:
           description: The name of the iteration variable.
           type: string
         iterRange:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         accuVar:
           description: The name of the variable used for accumulation of the result.
           type: string
         accuInit:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         loopCondition:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         loopStep:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         result:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
       type: object
     ComputedAttribute:
       description: ComputedAttribute defines a computed attribute which includes its
@@ -2661,16 +2843,48 @@ components:
       description: |-
         Context encapsulates the information related to a single operation,
         including the tuples involved and the associated attributes.
+      example:
+        data: "{}"
+        attributes:
+        - attribute: attribute
+          value:
+            '@type': '@type'
+          entity:
+            id: id
+            type: type
+        - attribute: attribute
+          value:
+            '@type': '@type'
+          entity:
+            id: id
+            type: type
+        tuples:
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
       properties:
         tuples:
           description: A repeated field of tuples involved in the operation.
           items:
-            $ref: '#/components/schemas/Tuple'
+            $ref: "#/components/schemas/Tuple"
           type: array
         attributes:
           description: A repeated field of attributes associated with the operation.
           items:
-            $ref: '#/components/schemas/Attribute'
+            $ref: "#/components/schemas/Attribute"
           type: array
         data:
           description: Additional data associated with the context.
@@ -2693,18 +2907,11 @@ components:
 
         Lists may either be homogenous, e.g. `[1, 2, 3]`, or heterogeneous, e.g.
         `dyn([1, 'hello', 2.0])`
-      example:
-        elements:
-        - null
-        - null
-        optionalIndices:
-        - 5
-        - 5
       properties:
         elements:
           description: The elements part of the list.
           items:
-            $ref: '#/components/schemas/Expr'
+            $ref: "#/components/schemas/Expr"
           type: array
         optionalIndices:
           description: |-
@@ -2726,19 +2933,6 @@ components:
         Maps are constructed as `{'key_name': 'value'}`. Message construction is
         similar, but prefixed with a type name and composed of field ids:
         `types.MyType{field_id: 'value'}`.
-      example:
-        messageName: messageName
-        entries:
-        - fieldKey: fieldKey
-          mapKey: null
-          id: id
-          value: null
-          optionalEntry: true
-        - fieldKey: fieldKey
-          mapKey: null
-          id: id
-          value: null
-          optionalEntry: true
       properties:
         messageName:
           description: |-
@@ -2748,7 +2942,38 @@ components:
         entries:
           description: The entries in the creation expression.
           items:
-            $ref: '#/components/schemas/Entry'
+            $ref: "#/components/schemas/Entry"
+          type: array
+      type: object
+    Data.DeleteBody:
+      description: |-
+        DataDeleteRequest defines the structure of a request to delete data.
+        It includes the tenant_id and filters for selecting tuples and attributes to be deleted.
+      properties:
+        tuple_filter:
+          $ref: "#/components/schemas/TupleFilter"
+        attribute_filter:
+          $ref: "#/components/schemas/AttributeFilter"
+      type: object
+    Data.WriteBody:
+      description: |-
+        DataWriteRequest defines the structure of a request for writing data.
+        It contains the necessary information such as tenant_id, metadata,
+        tuples and attributes for the write operation.
+      properties:
+        metadata:
+          $ref: "#/components/schemas/DataWriteRequestMetadata"
+        tuples:
+          description: tuples contains the list of tuples (entity-relation-entity
+            triples) that need to be written.
+          items:
+            $ref: "#/components/schemas/Tuple"
+          type: array
+        attributes:
+          description: attributes contains the list of attributes (entity-attribute-value
+            triples) that need to be written.
+          items:
+            $ref: "#/components/schemas/Attribute"
           type: array
       type: object
     DataBundle:
@@ -2802,7 +3027,7 @@ components:
             'operations' is a repeated field containing multiple Operation messages.
             Each Operation represents a specific action or set of actions to be performed.
           items:
-            $ref: '#/components/schemas/v1.Operation'
+            $ref: "#/components/schemas/v1.Operation"
           type: array
       type: object
     DataChange:
@@ -2828,11 +3053,11 @@ components:
         operation: OPERATION_UNSPECIFIED
       properties:
         operation:
-          $ref: '#/components/schemas/DataChange.Operation'
+          $ref: "#/components/schemas/DataChange.Operation"
         tuple:
-          $ref: '#/components/schemas/Tuple'
+          $ref: "#/components/schemas/Tuple"
         attribute:
-          $ref: '#/components/schemas/Attribute'
+          $ref: "#/components/schemas/Attribute"
       type: object
     DataChange.Operation:
       default: OPERATION_UNSPECIFIED
@@ -2892,7 +3117,7 @@ components:
         data_changes:
           description: The list of data changes.
           items:
-            $ref: '#/components/schemas/DataChange'
+            $ref: "#/components/schemas/DataChange"
           type: array
       type: object
     DataDeleteResponse:
@@ -2928,6 +3153,26 @@ components:
           description: "The snap token to avoid stale cache, see more details on [Snap\
             \ Tokens](../../operations/snap-tokens)."
           type: string
+      type: object
+    DeleteRelationshipsBody:
+      example:
+        filter:
+          subject:
+            ids:
+            - ids
+            - ids
+            type: type
+            relation: relation
+          entity:
+            ids:
+            - ids
+            - ids
+            type: type
+          relation: relation
+      properties:
+        filter:
+          $ref: "#/components/schemas/TupleFilter"
+      title: RelationshipDeleteRequest
       type: object
     Entity:
       description: Entity represents an entity with a type and an identifier.
@@ -2996,25 +3241,25 @@ components:
           type: string
         relations:
           additionalProperties:
-            $ref: '#/components/schemas/RelationDefinition'
+            $ref: "#/components/schemas/RelationDefinition"
           description: "Map of relation definitions within this entity. The key is\
             \ the relation name, and the value is the RelationDefinition."
           type: object
         permissions:
           additionalProperties:
-            $ref: '#/components/schemas/PermissionDefinition'
+            $ref: "#/components/schemas/PermissionDefinition"
           description: "Map of permission definitions within this entity. The key\
             \ is the permission name, and the value is the PermissionDefinition."
           type: object
         attributes:
           additionalProperties:
-            $ref: '#/components/schemas/AttributeDefinition'
+            $ref: "#/components/schemas/AttributeDefinition"
           description: "Map of attribute definitions within this entity. The key is\
             \ the attribute name, and the value is the AttributeDefinition."
           type: object
         references:
           additionalProperties:
-            $ref: '#/components/schemas/EntityDefinition.Reference'
+            $ref: "#/components/schemas/EntityDefinition.Reference"
           description: "Map of references indicating whether a string pertains to\
             \ a relation, permission, or attribute."
           type: object
@@ -3053,12 +3298,6 @@ components:
       type: object
     Entry:
       description: Represents an entry.
-      example:
-        fieldKey: fieldKey
-        mapKey: null
-        id: id
-        value: null
-        optionalEntry: true
       properties:
         id:
           description: |-
@@ -3071,108 +3310,65 @@ components:
           description: The field key for a message creator statement.
           type: string
         mapKey:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         value:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         optionalEntry:
           description: Whether the key-value pair is optional.
           type: boolean
       type: object
-    Expand:
-      description: |-
-        Expand is used to define a hierarchical structure for permissions.
-        It has an entity, permission, and arguments. The node can be either another hierarchical structure or a set of subjects.
-      example:
-        expand:
-          children:
-          - null
-          - null
-          operation: OPERATION_UNSPECIFIED
-        permission: permission
-        arguments:
-        - computedAttribute:
-            name: name
-          contextAttribute:
-            name: name
-        - computedAttribute:
-            name: name
-          contextAttribute:
-            name: name
-        leaf:
-          subjects:
-            subjects:
-            - id: id
-              type: type
-              relation: relation
-            - id: id
-              type: type
-              relation: relation
-          values:
-            values:
-              key:
-                '@type': '@type'
-          value:
-            '@type': '@type'
-        entity:
-          id: id
-          type: type
-      properties:
-        entity:
-          $ref: '#/components/schemas/Entity'
-        permission:
-          description: permission is the permission applied to the entity.
-          type: string
-        arguments:
-          description: arguments are the additional information or context used to
-            evaluate permissions.
-          items:
-            $ref: '#/components/schemas/Argument'
-          type: array
-        expand:
-          $ref: '#/components/schemas/ExpandTreeNode'
-        leaf:
-          $ref: '#/components/schemas/ExpandLeaf'
-      type: object
     ExpandLeaf:
       description: ExpandLeaf is the leaf node of an Expand tree and can be either
         a set of Subjects or a set of Values.
-      example:
-        subjects:
-          subjects:
-          - id: id
-            type: type
-            relation: relation
-          - id: id
-            type: type
-            relation: relation
-        values:
-          values:
-            key:
-              '@type': '@type'
-        value:
-          '@type': '@type'
       properties:
         subjects:
-          $ref: '#/components/schemas/Subjects'
+          $ref: "#/components/schemas/Subjects"
         values:
-          $ref: '#/components/schemas/Values'
+          $ref: "#/components/schemas/Values"
         value:
-          $ref: '#/components/schemas/Any'
+          $ref: "#/components/schemas/Any"
       type: object
     ExpandTreeNode:
       description: ExpandTreeNode represents a node in an expansion tree with a specific
         operation and its children.
-      example:
-        children:
-        - null
-        - null
-        operation: OPERATION_UNSPECIFIED
       properties:
         operation:
-          $ref: '#/components/schemas/ExpandTreeNode.Operation'
+          $ref: "#/components/schemas/ExpandTreeNode.Operation"
         children:
           items:
-            $ref: '#/components/schemas/Expand'
+            $ref: "#/components/schemas/v1.Expand"
           title: The children of this tree node
           type: array
       type: object
@@ -3203,102 +3399,38 @@ components:
         For example, the expression `google.api.name.startsWith('expr')` references
         the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
         the function declaration `startsWith`.
-      example:
-        identExpr:
-          name: name
-        selectExpr:
-          field: field
-          testOnly: true
-          operand: null
-        comprehensionExpr:
-          result: null
-          loopCondition: null
-          accuVar: accuVar
-          accuInit: null
-          iterVar: iterVar
-          iterRange: null
-          loopStep: null
-        structExpr:
-          messageName: messageName
-          entries:
-          - fieldKey: fieldKey
-            mapKey: null
-            id: id
-            value: null
-            optionalEntry: true
-          - fieldKey: fieldKey
-            mapKey: null
-            id: id
-            value: null
-            optionalEntry: true
-        id: id
-        callExpr:
-          args:
-          - null
-          - null
-          function: function
-          target: null
-        listExpr:
-          elements:
-          - null
-          - null
-          optionalIndices:
-          - 5
-          - 5
-        constExpr:
-          int64Value: int64Value
-          uint64Value: uint64Value
-          stringValue: stringValue
-          durationValue: durationValue
-          timestampValue: 2000-01-23T04:56:07.000+00:00
-          boolValue: true
-          doubleValue: 0.8008281904610115
-          bytesValue: bytesValue
-          nullValue: nullValue
-      properties:
-        id:
-          description: |-
-            Required. An id assigned to this node by the parser which is unique in a
-            given expression tree. This is used to associate type information and other
-            attributes to a node in the parse tree.
-          format: int64
-          type: string
-        constExpr:
-          $ref: '#/components/schemas/Constant'
-        identExpr:
-          $ref: '#/components/schemas/Ident'
-        selectExpr:
-          $ref: '#/components/schemas/Select'
-        callExpr:
-          $ref: '#/components/schemas/Expr.Call'
-        listExpr:
-          $ref: '#/components/schemas/CreateList'
-        structExpr:
-          $ref: '#/components/schemas/CreateStruct'
-        comprehensionExpr:
-          $ref: '#/components/schemas/Comprehension'
       type: object
     Expr.Call:
       description: |-
         A call expression, including calls to predefined functions and operators.
 
         For example, `value == 10`, `size(map_value)`.
-      example:
-        args:
-        - null
-        - null
-        function: function
-        target: null
       properties:
         target:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         function:
           description: Required. The name of the function or method being called.
           type: string
         args:
           description: The arguments.
           items:
-            $ref: '#/components/schemas/Expr'
+            $ref: "#/components/schemas/Expr"
           type: array
       type: object
     FunctionType:
@@ -3310,17 +3442,22 @@ components:
         resultType: null
       properties:
         resultType:
-          $ref: '#/components/schemas/v1alpha1.Type'
+          $ref: "#/components/schemas/v1alpha1.Type"
         argTypes:
           description: Argument types of the function.
           items:
-            $ref: '#/components/schemas/v1alpha1.Type'
+            $ref: "#/components/schemas/v1alpha1.Type"
           type: array
+      type: object
+    HealthResponse:
+      example:
+        status: status
+      properties:
+        status:
+          type: string
       type: object
     Ident:
       description: An identifier expression. e.g. `request`.
-      example:
-        name: name
       properties:
         name:
           description: |-
@@ -3355,13 +3492,13 @@ components:
             relation: relation
       properties:
         computedUserSet:
-          $ref: '#/components/schemas/ComputedUserSet'
+          $ref: "#/components/schemas/ComputedUserSet"
         tupleToUserSet:
-          $ref: '#/components/schemas/TupleToUserSet'
+          $ref: "#/components/schemas/TupleToUserSet"
         computedAttribute:
-          $ref: '#/components/schemas/ComputedAttribute'
+          $ref: "#/components/schemas/ComputedAttribute"
         call:
-          $ref: '#/components/schemas/v1.Call'
+          $ref: "#/components/schemas/v1.Call"
       type: object
     ListType:
       description: "List type with typed elements, e.g. `list<example.proto.MyMessage>`."
@@ -3369,7 +3506,232 @@ components:
         elemType: null
       properties:
         elemType:
-          $ref: '#/components/schemas/v1alpha1.Type'
+          $ref: "#/components/schemas/v1alpha1.Type"
+      type: object
+    LookupEntityBody:
+      description: PermissionLookupEntityRequest is the request message for the LookupEntity
+        method in the Permission service.
+      example:
+        metadata:
+          schema_version: schema_version
+          snap_token: snap_token
+          depth: 0
+        entity_type: entity_type
+        subject:
+          id: id
+          type: type
+          relation: relation
+        continuous_token: continuous_token
+        context:
+          data: "{}"
+          attributes:
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          tuples:
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+        permission: permission
+        page_size: 6
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionLookupEntityRequestMetadata"
+        entity_type:
+          description: "Type of the entity to lookup, required, must start with a\
+            \ letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        permission:
+          description: "Name of the permission to check, required, must start with\
+            \ a letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        subject:
+          $ref: "#/components/schemas/Subject"
+        context:
+          $ref: "#/components/schemas/Context"
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
+      type: object
+    LookupEntityStreamBody:
+      description: PermissionLookupEntityRequest is the request message for the LookupEntity
+        method in the Permission service.
+      example:
+        metadata:
+          schema_version: schema_version
+          snap_token: snap_token
+          depth: 0
+        entity_type: entity_type
+        subject:
+          id: id
+          type: type
+          relation: relation
+        continuous_token: continuous_token
+        context:
+          data: "{}"
+          attributes:
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          tuples:
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+        permission: permission
+        page_size: 0
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionLookupEntityRequestMetadata"
+        entity_type:
+          description: "Type of the entity to lookup, required, must start with a\
+            \ letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        permission:
+          description: "Name of the permission to check, required, must start with\
+            \ a letter and can include alphanumeric and underscore, max 64 bytes."
+          type: string
+        subject:
+          $ref: "#/components/schemas/Subject"
+        context:
+          $ref: "#/components/schemas/Context"
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
+      type: object
+    LookupSubjectBody:
+      description: PermissionLookupSubjectRequest is the request message for the LookupSubject
+        method in the Permission service.
+      example:
+        metadata:
+          schema_version: schema_version
+          snap_token: snap_token
+          depth: 0
+        continuous_token: continuous_token
+        subject_reference:
+          type: type
+          relation: relation
+        context:
+          data: "{}"
+          attributes:
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          tuples:
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+        permission: permission
+        entity:
+          id: id
+          type: type
+        page_size: 6
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionLookupSubjectRequestMetadata"
+        entity:
+          $ref: "#/components/schemas/Entity"
+        permission:
+          description: "Permission to be checked, can be a permission or relation.\
+            \ Required, and must match the pattern \"^([a-zA-Z][a-zA-Z0-9_]{1,62}[a-zA-Z0-9])$\"\
+            , max 64 bytes."
+          type: string
+        subject_reference:
+          $ref: "#/components/schemas/RelationReference"
+        context:
+          $ref: "#/components/schemas/Context"
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
       type: object
     MapType:
       description: "Map type with parameterized key and value types, e.g. `map<string,\
@@ -3379,9 +3741,9 @@ components:
         keyType: null
       properties:
         keyType:
-          $ref: '#/components/schemas/v1alpha1.Type'
+          $ref: "#/components/schemas/v1alpha1.Type"
         valueType:
-          $ref: '#/components/schemas/v1alpha1.Type'
+          $ref: "#/components/schemas/v1alpha1.Type"
       type: object
     NullValue:
       default: NULL_VALUE
@@ -3395,7 +3757,44 @@ components:
       enum:
       - NULL_VALUE
       type: string
+    PartialWriteBody:
+      example:
+        metadata:
+          schema_version: schema_version
+        partials:
+          key:
+            update:
+            - update
+            - update
+            write:
+            - write
+            - write
+            delete:
+            - delete
+            - delete
+      properties:
+        metadata:
+          $ref: "#/components/schemas/SchemaPartialWriteRequestMetadata"
+        partials:
+          additionalProperties:
+            $ref: "#/components/schemas/Partials"
+          title: Map of entity name with the values needed to be updated
+          type: object
+      title: |-
+        It contains the tenant_id to identify the tenant and metadata of the schema to be edited,
+        with the corresponding edits to various entities
+      type: object
     Partials:
+      example:
+        update:
+        - update
+        - update
+        write:
+        - write
+        - write
+        delete:
+        - delete
+        - delete
       properties:
         write:
           items:
@@ -3410,6 +3809,48 @@ components:
             type: string
           type: array
       title: "Partials contains the write, update and delete definitions"
+      type: object
+    Permission.CheckBody:
+      description: PermissionCheckRequest is the request message for the Check method
+        in the Permission service.
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionCheckRequestMetadata"
+        entity:
+          $ref: "#/components/schemas/Entity"
+        permission:
+          description: The action the user wants to perform on the resource
+          type: string
+        subject:
+          $ref: "#/components/schemas/Subject"
+        context:
+          $ref: "#/components/schemas/Context"
+        arguments:
+          description: Additional arguments associated with this request.
+          items:
+            $ref: "#/components/schemas/Argument"
+          type: array
+      type: object
+    Permission.ExpandBody:
+      description: PermissionExpandRequest is the request message for the Expand method
+        in the Permission service.
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionExpandRequestMetadata"
+        entity:
+          $ref: "#/components/schemas/Entity"
+        permission:
+          description: "Name of the permission to be expanded, not required, must\
+            \ start with a letter and can include alphanumeric and underscore, max\
+            \ 64 bytes."
+          type: string
+        context:
+          $ref: "#/components/schemas/Context"
+        arguments:
+          description: Additional arguments associated with this request.
+          items:
+            $ref: "#/components/schemas/Argument"
+          type: array
       type: object
     PermissionCheckRequestMetadata:
       description: PermissionCheckRequestMetadata metadata for the PermissionCheckRequest.
@@ -3435,9 +3876,9 @@ components:
           check_count: 0
       properties:
         can:
-          $ref: '#/components/schemas/CheckResult'
+          $ref: "#/components/schemas/CheckResult"
         metadata:
-          $ref: '#/components/schemas/PermissionCheckResponseMetadata'
+          $ref: "#/components/schemas/PermissionCheckResponseMetadata"
       type: object
     PermissionCheckResponseMetadata:
       description: PermissionCheckResponseMetadata metadata for the PermissionCheckResponse.
@@ -3487,7 +3928,7 @@ components:
             \ pattern and has a maximum byte size."
           type: string
         child:
-          $ref: '#/components/schemas/Child'
+          $ref: "#/components/schemas/Child"
       type: object
     PermissionExpandRequestMetadata:
       description: PermissionExpandRequestMetadata metadata for the PermissionExpandRequest.
@@ -3504,46 +3945,20 @@ components:
       description: PermissionExpandResponse is the response message for the Expand
         method in the Permission service.
       example:
-        tree:
-          expand:
-            children:
-            - null
-            - null
-            operation: OPERATION_UNSPECIFIED
-          permission: permission
-          arguments:
-          - computedAttribute:
-              name: name
-            contextAttribute:
-              name: name
-          - computedAttribute:
-              name: name
-            contextAttribute:
-              name: name
-          leaf:
-            subjects:
-              subjects:
-              - id: id
-                type: type
-                relation: relation
-              - id: id
-                type: type
-                relation: relation
-            values:
-              values:
-                key:
-                  '@type': '@type'
-            value:
-              '@type': '@type'
-          entity:
-            id: id
-            type: type
+        tree: "{}"
       properties:
         tree:
-          $ref: '#/components/schemas/Expand'
+          description: |-
+            Expand is used to define a hierarchical structure for permissions.
+            It has an entity, permission, and arguments. The node can be either another hierarchical structure or a set of subjects.
+          type: object
       type: object
     PermissionLookupEntityRequestMetadata:
       description: PermissionLookupEntityRequestMetadata metadata for the PermissionLookupEntityRequest.
+      example:
+        schema_version: schema_version
+        snap_token: snap_token
+        depth: 0
       properties:
         schema_version:
           description: Version of the schema.
@@ -3561,6 +3976,7 @@ components:
       description: PermissionLookupEntityResponse is the response message for the
         LookupEntity method in the Permission service.
       example:
+        continuous_token: continuous_token
         entity_ids:
         - entity_ids
         - entity_ids
@@ -3570,19 +3986,32 @@ components:
           items:
             type: string
           type: array
+        continuous_token:
+          description: continuous_token is a string that can be used to paginate and
+            retrieve the next set of results.
+          type: string
       type: object
     PermissionLookupEntityStreamResponse:
       description: PermissionLookupEntityStreamResponse is the response message for
         the LookupEntityStream method in the Permission service.
       example:
+        continuous_token: continuous_token
         entity_id: entity_id
       properties:
         entity_id:
           description: Identifier for an entity that matches the lookup.
           type: string
+        continuous_token:
+          description: continuous_token is a string that can be used to paginate and
+            retrieve the next set of results.
+          type: string
       type: object
     PermissionLookupSubjectRequestMetadata:
       description: PermissionLookupSubjectRequestMetadata metadata for the PermissionLookupSubjectRequest.
+      example:
+        schema_version: schema_version
+        snap_token: snap_token
+        depth: 0
       properties:
         schema_version:
           description: Version of the schema.
@@ -3603,15 +4032,25 @@ components:
         subject_ids:
         - subject_ids
         - subject_ids
+        continuous_token: continuous_token
       properties:
         subject_ids:
           description: List of identifiers for subjects that match the lookup.
           items:
             type: string
           type: array
+        continuous_token:
+          description: continuous_token is a string that can be used to paginate and
+            retrieve the next set of results.
+          type: string
       type: object
     PermissionSubjectPermissionRequestMetadata:
       description: PermissionSubjectPermissionRequestMetadata metadata for the PermissionSubjectPermissionRequest.
+      example:
+        schema_version: schema_version
+        snap_token: snap_token
+        only_permission: true
+        depth: 0
       properties:
         schema_version:
           description: Version of the schema.
@@ -3637,7 +4076,7 @@ components:
       properties:
         results:
           additionalProperties:
-            $ref: '#/components/schemas/CheckResult'
+            $ref: "#/components/schemas/CheckResult"
           description: Map of results for each permission check.
           type: object
       type: object
@@ -3668,6 +4107,78 @@ components:
       - STRING
       - BYTES
       type: string
+    ReadAttributesBody:
+      description: |-
+        AttributeReadRequest defines the structure of a request for reading attributes.
+        It includes the tenant_id, metadata, attribute filter, page size for pagination, and a continuous token for multi-page results.
+      example:
+        filter:
+          attributes:
+          - attributes
+          - attributes
+          entity:
+            ids:
+            - ids
+            - ids
+            type: type
+        metadata:
+          snap_token: snap_token
+        continuous_token: continuous_token
+        page_size: 0
+      properties:
+        metadata:
+          $ref: "#/components/schemas/AttributeReadRequestMetadata"
+        filter:
+          $ref: "#/components/schemas/AttributeFilter"
+        page_size:
+          description: |-
+            page_size specifies the number of results to return in a single page.
+            If more results are available, a continuous_token is included in the response.
+          format: int64
+          type: integer
+        continuous_token:
+          description: continuous_token is used in case of paginated reads to get
+            the next page of results.
+          type: string
+      type: object
+    ReadRelationshipsBody:
+      description: |-
+        RelationshipReadRequest defines the structure of a request for reading relationships.
+        It contains the necessary information such as tenant_id, metadata, and filter for the read operation.
+      example:
+        filter:
+          subject:
+            ids:
+            - ids
+            - ids
+            type: type
+            relation: relation
+          entity:
+            ids:
+            - ids
+            - ids
+            type: type
+          relation: relation
+        metadata:
+          snap_token: snap_token
+        continuous_token: continuous_token
+        page_size: 0
+      properties:
+        metadata:
+          $ref: "#/components/schemas/RelationshipReadRequestMetadata"
+        filter:
+          $ref: "#/components/schemas/TupleFilter"
+        page_size:
+          description: |-
+            page_size specifies the number of results to return in a single page.
+            If more results are available, a continuous_token is included in the response.
+          format: int64
+          type: integer
+        continuous_token:
+          description: continuous_token is used in case of paginated reads to get
+            the next page of results.
+          type: string
+      type: object
     RelationDefinition:
       description: The RelationDefinition message provides detailed information about
         a specific relation.
@@ -3686,7 +4197,7 @@ components:
         relationReferences:
           description: A list of references to other relations.
           items:
-            $ref: '#/components/schemas/RelationReference'
+            $ref: "#/components/schemas/RelationReference"
           type: array
       type: object
     RelationReference:
@@ -3719,6 +4230,8 @@ components:
       description: |-
         RelationshipReadRequestMetadata defines the structure of the metadata for a read request focused on relationships.
         It includes the snap_token associated with a particular state of the database.
+      example:
+        snap_token: snap_token
       properties:
         snap_token:
           description: "The snap token to avoid stale cache, see more details on [Snap\
@@ -3753,7 +4266,7 @@ components:
           description: "tuples is a list of the relationships retrieved in the read\
             \ operation, represented as entity-relation-entity triples."
           items:
-            $ref: '#/components/schemas/Tuple'
+            $ref: "#/components/schemas/Tuple"
           type: array
         continuous_token:
           description: continuous_token is used in the case of paginated reads to
@@ -3761,6 +4274,8 @@ components:
           type: string
       type: object
     RelationshipWriteRequestMetadata:
+      example:
+        schema_version: schema_version
       properties:
         schema_version:
           type: string
@@ -3787,11 +4302,11 @@ components:
         - null
       properties:
         rewriteOperation:
-          $ref: '#/components/schemas/Rewrite.Operation'
+          $ref: "#/components/schemas/Rewrite.Operation"
         children:
           description: A list of children that are operated upon by the rewrite operation.
           items:
-            $ref: '#/components/schemas/Child'
+            $ref: "#/components/schemas/Child"
           type: array
       type: object
     Rewrite.Operation:
@@ -3826,58 +4341,7 @@ components:
             positions:
               key: 1
             macroCalls:
-              key:
-                identExpr:
-                  name: name
-                selectExpr:
-                  field: field
-                  testOnly: true
-                  operand: null
-                comprehensionExpr:
-                  result: null
-                  loopCondition: null
-                  accuVar: accuVar
-                  accuInit: null
-                  iterVar: iterVar
-                  iterRange: null
-                  loopStep: null
-                structExpr:
-                  messageName: messageName
-                  entries:
-                  - fieldKey: fieldKey
-                    mapKey: null
-                    id: id
-                    value: null
-                    optionalEntry: true
-                  - fieldKey: fieldKey
-                    mapKey: null
-                    id: id
-                    value: null
-                    optionalEntry: true
-                id: id
-                callExpr:
-                  args:
-                  - null
-                  - null
-                  function: function
-                  target: null
-                listExpr:
-                  elements:
-                  - null
-                  - null
-                  optionalIndices:
-                  - 5
-                  - 5
-                constExpr:
-                  int64Value: int64Value
-                  uint64Value: uint64Value
-                  stringValue: stringValue
-                  durationValue: durationValue
-                  timestampValue: 2000-01-23T04:56:07.000+00:00
-                  boolValue: true
-                  doubleValue: 0.8008281904610115
-                  bytesValue: bytesValue
-                  nullValue: nullValue
+              key: null
           typeMap:
             key:
               primitive: PRIMITIVE_TYPE_UNSPECIFIED
@@ -3921,58 +4385,7 @@ components:
                 doubleValue: 0.8008281904610115
                 bytesValue: bytesValue
                 nullValue: nullValue
-          expr:
-            identExpr:
-              name: name
-            selectExpr:
-              field: field
-              testOnly: true
-              operand: null
-            comprehensionExpr:
-              result: null
-              loopCondition: null
-              accuVar: accuVar
-              accuInit: null
-              iterVar: iterVar
-              iterRange: null
-              loopStep: null
-            structExpr:
-              messageName: messageName
-              entries:
-              - fieldKey: fieldKey
-                mapKey: null
-                id: id
-                value: null
-                optionalEntry: true
-              - fieldKey: fieldKey
-                mapKey: null
-                id: id
-                value: null
-                optionalEntry: true
-            id: id
-            callExpr:
-              args:
-              - null
-              - null
-              function: function
-              target: null
-            listExpr:
-              elements:
-              - null
-              - null
-              optionalIndices:
-              - 5
-              - 5
-            constExpr:
-              int64Value: int64Value
-              uint64Value: uint64Value
-              stringValue: stringValue
-              durationValue: durationValue
-              timestampValue: 2000-01-23T04:56:07.000+00:00
-              boolValue: true
-              doubleValue: 0.8008281904610115
-              bytesValue: bytesValue
-              nullValue: nullValue
+          expr: "{}"
         name: name
         arguments:
           key: null
@@ -3983,12 +4396,64 @@ components:
           type: string
         arguments:
           additionalProperties:
-            $ref: '#/components/schemas/AttributeType'
+            $ref: "#/components/schemas/AttributeType"
           description: "Map of arguments for this rule. The key is the attribute name,\
             \ and the value is the AttributeType."
           type: object
         expression:
-          $ref: '#/components/schemas/CheckedExpr'
+          $ref: "#/components/schemas/CheckedExpr"
+      type: object
+    RunBundleBody:
+      description: |-
+        BundleRunRequest is used to request the execution of a bundle.
+        It includes tenant_id, the name of the bundle, and additional arguments for execution.
+      example:
+        name: name
+        arguments:
+          key: arguments
+      properties:
+        name:
+          description: Name of the bundle to be executed.
+          type: string
+        arguments:
+          additionalProperties:
+            type: string
+          description: Additional key-value pairs for execution arguments.
+          type: object
+      type: object
+    Schema.ListBody:
+      description: |-
+        SchemaListRequest is the request message for the List method in the Schema service.
+        It contains tenant_id for which the schemas are to be listed.
+      properties:
+        page_size:
+          description: |-
+            page_size is the number of tenants to be returned in the response.
+            The value should be between 1 and 100.
+          format: int64
+          type: integer
+        continuous_token:
+          description: |-
+            continuous_token is an optional parameter used for pagination.
+            It should be the value received in the previous response.
+          type: string
+      type: object
+    Schema.ReadBody:
+      description: |-
+        SchemaReadRequest is the request message for the Read method in the Schema service.
+        It contains tenant_id and metadata about the schema to be read.
+      properties:
+        metadata:
+          $ref: "#/components/schemas/SchemaReadRequestMetadata"
+      type: object
+    Schema.WriteBody:
+      description: |-
+        SchemaWriteRequest is the request message for the Write method in the Schema service.
+        It contains tenant_id and the schema to be written.
+      properties:
+        schema:
+          description: schema is the string representation of the schema to be written.
+          type: string
       type: object
     SchemaDefinition:
       description: |-
@@ -4007,58 +4472,7 @@ components:
                 positions:
                   key: 1
                 macroCalls:
-                  key:
-                    identExpr:
-                      name: name
-                    selectExpr:
-                      field: field
-                      testOnly: true
-                      operand: null
-                    comprehensionExpr:
-                      result: null
-                      loopCondition: null
-                      accuVar: accuVar
-                      accuInit: null
-                      iterVar: iterVar
-                      iterRange: null
-                      loopStep: null
-                    structExpr:
-                      messageName: messageName
-                      entries:
-                      - fieldKey: fieldKey
-                        mapKey: null
-                        id: id
-                        value: null
-                        optionalEntry: true
-                      - fieldKey: fieldKey
-                        mapKey: null
-                        id: id
-                        value: null
-                        optionalEntry: true
-                    id: id
-                    callExpr:
-                      args:
-                      - null
-                      - null
-                      function: function
-                      target: null
-                    listExpr:
-                      elements:
-                      - null
-                      - null
-                      optionalIndices:
-                      - 5
-                      - 5
-                    constExpr:
-                      int64Value: int64Value
-                      uint64Value: uint64Value
-                      stringValue: stringValue
-                      durationValue: durationValue
-                      timestampValue: 2000-01-23T04:56:07.000+00:00
-                      boolValue: true
-                      doubleValue: 0.8008281904610115
-                      bytesValue: bytesValue
-                      nullValue: nullValue
+                  key: null
               typeMap:
                 key:
                   primitive: PRIMITIVE_TYPE_UNSPECIFIED
@@ -4102,58 +4516,7 @@ components:
                     doubleValue: 0.8008281904610115
                     bytesValue: bytesValue
                     nullValue: nullValue
-              expr:
-                identExpr:
-                  name: name
-                selectExpr:
-                  field: field
-                  testOnly: true
-                  operand: null
-                comprehensionExpr:
-                  result: null
-                  loopCondition: null
-                  accuVar: accuVar
-                  accuInit: null
-                  iterVar: iterVar
-                  iterRange: null
-                  loopStep: null
-                structExpr:
-                  messageName: messageName
-                  entries:
-                  - fieldKey: fieldKey
-                    mapKey: null
-                    id: id
-                    value: null
-                    optionalEntry: true
-                  - fieldKey: fieldKey
-                    mapKey: null
-                    id: id
-                    value: null
-                    optionalEntry: true
-                id: id
-                callExpr:
-                  args:
-                  - null
-                  - null
-                  function: function
-                  target: null
-                listExpr:
-                  elements:
-                  - null
-                  - null
-                  optionalIndices:
-                  - 5
-                  - 5
-                constExpr:
-                  int64Value: int64Value
-                  uint64Value: uint64Value
-                  stringValue: stringValue
-                  durationValue: durationValue
-                  timestampValue: 2000-01-23T04:56:07.000+00:00
-                  boolValue: true
-                  doubleValue: 0.8008281904610115
-                  bytesValue: bytesValue
-                  nullValue: nullValue
+              expr: "{}"
             name: name
             arguments:
               key: null
@@ -4209,19 +4572,19 @@ components:
       properties:
         entityDefinitions:
           additionalProperties:
-            $ref: '#/components/schemas/EntityDefinition'
+            $ref: "#/components/schemas/EntityDefinition"
           description: "Map of entity definitions. The key is the entity name, and\
             \ the value is the corresponding EntityDefinition."
           type: object
         ruleDefinitions:
           additionalProperties:
-            $ref: '#/components/schemas/RuleDefinition'
+            $ref: "#/components/schemas/RuleDefinition"
           description: "Map of rule definitions. The key is the rule name, and the\
             \ value is the corresponding RuleDefinition."
           type: object
         references:
           additionalProperties:
-            $ref: '#/components/schemas/SchemaDefinition.Reference'
+            $ref: "#/components/schemas/SchemaDefinition.Reference"
           description: Map of references to signify whether a string refers to an
             entity or a rule.
           type: object
@@ -4266,7 +4629,7 @@ components:
           type: string
         schemas:
           items:
-            $ref: '#/components/schemas/SchemaList'
+            $ref: "#/components/schemas/SchemaList"
           title: list of schema versions with creation timestamps
           type: array
         continuous_token:
@@ -4281,6 +4644,8 @@ components:
       description: |-
         SchemaPartialWriteRequestMetadata provides additional information for the Schema Partial Write request.
         It contains schema_version to specify which version of the schema should be read.
+      example:
+        schema_version: schema_version
       properties:
         schema_version:
           description: schema_version is the string that identifies the version of
@@ -4327,58 +4692,7 @@ components:
                   positions:
                     key: 1
                   macroCalls:
-                    key:
-                      identExpr:
-                        name: name
-                      selectExpr:
-                        field: field
-                        testOnly: true
-                        operand: null
-                      comprehensionExpr:
-                        result: null
-                        loopCondition: null
-                        accuVar: accuVar
-                        accuInit: null
-                        iterVar: iterVar
-                        iterRange: null
-                        loopStep: null
-                      structExpr:
-                        messageName: messageName
-                        entries:
-                        - fieldKey: fieldKey
-                          mapKey: null
-                          id: id
-                          value: null
-                          optionalEntry: true
-                        - fieldKey: fieldKey
-                          mapKey: null
-                          id: id
-                          value: null
-                          optionalEntry: true
-                      id: id
-                      callExpr:
-                        args:
-                        - null
-                        - null
-                        function: function
-                        target: null
-                      listExpr:
-                        elements:
-                        - null
-                        - null
-                        optionalIndices:
-                        - 5
-                        - 5
-                      constExpr:
-                        int64Value: int64Value
-                        uint64Value: uint64Value
-                        stringValue: stringValue
-                        durationValue: durationValue
-                        timestampValue: 2000-01-23T04:56:07.000+00:00
-                        boolValue: true
-                        doubleValue: 0.8008281904610115
-                        bytesValue: bytesValue
-                        nullValue: nullValue
+                    key: null
                 typeMap:
                   key:
                     primitive: PRIMITIVE_TYPE_UNSPECIFIED
@@ -4422,58 +4736,7 @@ components:
                       doubleValue: 0.8008281904610115
                       bytesValue: bytesValue
                       nullValue: nullValue
-                expr:
-                  identExpr:
-                    name: name
-                  selectExpr:
-                    field: field
-                    testOnly: true
-                    operand: null
-                  comprehensionExpr:
-                    result: null
-                    loopCondition: null
-                    accuVar: accuVar
-                    accuInit: null
-                    iterVar: iterVar
-                    iterRange: null
-                    loopStep: null
-                  structExpr:
-                    messageName: messageName
-                    entries:
-                    - fieldKey: fieldKey
-                      mapKey: null
-                      id: id
-                      value: null
-                      optionalEntry: true
-                    - fieldKey: fieldKey
-                      mapKey: null
-                      id: id
-                      value: null
-                      optionalEntry: true
-                  id: id
-                  callExpr:
-                    args:
-                    - null
-                    - null
-                    function: function
-                    target: null
-                  listExpr:
-                    elements:
-                    - null
-                    - null
-                    optionalIndices:
-                    - 5
-                    - 5
-                  constExpr:
-                    int64Value: int64Value
-                    uint64Value: uint64Value
-                    stringValue: stringValue
-                    durationValue: durationValue
-                    timestampValue: 2000-01-23T04:56:07.000+00:00
-                    boolValue: true
-                    doubleValue: 0.8008281904610115
-                    bytesValue: bytesValue
-                    nullValue: nullValue
+                expr: "{}"
               name: name
               arguments:
                 key: null
@@ -4528,7 +4791,7 @@ components:
                     relation: relation
       properties:
         schema:
-          $ref: '#/components/schemas/SchemaDefinition'
+          $ref: "#/components/schemas/SchemaDefinition"
       type: object
     SchemaWriteResponse:
       description: |-
@@ -4544,13 +4807,25 @@ components:
       type: object
     Select:
       description: A field selection expression. e.g. `request.auth`.
-      example:
-        field: field
-        testOnly: true
-        operand: null
       properties:
         operand:
-          $ref: '#/components/schemas/Expr'
+          description: |-
+            An abstract representation of a common expression.
+
+            Expressions are abstractly represented as a collection of identifiers,
+            select statements, function calls, literals, and comprehensions. All
+            operators with the exception of the '.' operator are modelled as function
+            calls. This makes it easy to represent new operators into the existing AST.
+
+            All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
+            type-check for an expression to be valid. A reference may either be a bare
+            identifier `name` or a qualified identifier `google.api.name`. References
+            may either refer to a value or a function declaration.
+
+            For example, the expression `google.api.name.startsWith('expr')` references
+            the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
+            the function declaration `startsWith`.
+          type: object
         field:
           description: |-
             Required. The name of the field to select.
@@ -4576,58 +4851,7 @@ components:
         positions:
           key: 1
         macroCalls:
-          key:
-            identExpr:
-              name: name
-            selectExpr:
-              field: field
-              testOnly: true
-              operand: null
-            comprehensionExpr:
-              result: null
-              loopCondition: null
-              accuVar: accuVar
-              accuInit: null
-              iterVar: iterVar
-              iterRange: null
-              loopStep: null
-            structExpr:
-              messageName: messageName
-              entries:
-              - fieldKey: fieldKey
-                mapKey: null
-                id: id
-                value: null
-                optionalEntry: true
-              - fieldKey: fieldKey
-                mapKey: null
-                id: id
-                value: null
-                optionalEntry: true
-            id: id
-            callExpr:
-              args:
-              - null
-              - null
-              function: function
-              target: null
-            listExpr:
-              elements:
-              - null
-              - null
-              optionalIndices:
-              - 5
-              - 5
-            constExpr:
-              int64Value: int64Value
-              uint64Value: uint64Value
-              stringValue: stringValue
-              durationValue: durationValue
-              timestampValue: 2000-01-23T04:56:07.000+00:00
-              boolValue: true
-              doubleValue: 0.8008281904610115
-              bytesValue: bytesValue
-              nullValue: nullValue
+          key: null
       properties:
         syntaxVersion:
           description: "The syntax version of the source, e.g. `cel1`."
@@ -4662,7 +4886,7 @@ components:
           type: object
         macroCalls:
           additionalProperties:
-            $ref: '#/components/schemas/Expr'
+            $ref: "#/components/schemas/Expr"
           description: |-
             A map from the parse node id where a macro replacement was made to the
             call `Expr` that resulted in a macro expansion.
@@ -4689,7 +4913,7 @@ components:
           type: string
         details:
           items:
-            $ref: '#/components/schemas/Any'
+            $ref: "#/components/schemas/Any"
           type: array
       type: object
     Subject:
@@ -4728,21 +4952,71 @@ components:
         relation:
           type: string
       type: object
+    SubjectPermissionBody:
+      description: PermissionSubjectPermissionRequest is the request message for the
+        SubjectPermission method in the Permission service.
+      example:
+        metadata:
+          schema_version: schema_version
+          snap_token: snap_token
+          only_permission: true
+          depth: 0
+        subject:
+          id: id
+          type: type
+          relation: relation
+        context:
+          data: "{}"
+          attributes:
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          - attribute: attribute
+            value:
+              '@type': '@type'
+            entity:
+              id: id
+              type: type
+          tuples:
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+          - subject:
+              id: id
+              type: type
+              relation: relation
+            entity:
+              id: id
+              type: type
+            relation: relation
+        entity:
+          id: id
+          type: type
+      properties:
+        metadata:
+          $ref: "#/components/schemas/PermissionSubjectPermissionRequestMetadata"
+        entity:
+          $ref: "#/components/schemas/Entity"
+        subject:
+          $ref: "#/components/schemas/Subject"
+        context:
+          $ref: "#/components/schemas/Context"
+      type: object
     Subjects:
       description: Subjects holds a repeated field of Subject type.
-      example:
-        subjects:
-        - id: id
-          type: type
-          relation: relation
-        - id: id
-          type: type
-          relation: relation
       properties:
         subjects:
           description: A list of subjects.
           items:
-            $ref: '#/components/schemas/Subject'
+            $ref: "#/components/schemas/Subject"
           type: array
       type: object
     Tenant:
@@ -4788,7 +5062,7 @@ components:
           id: id
       properties:
         tenant:
-          $ref: '#/components/schemas/Tenant'
+          $ref: "#/components/schemas/Tenant"
       type: object
     TenantDeleteResponse:
       description: TenantDeleteResponse is the message returned from the request to
@@ -4800,7 +5074,7 @@ components:
           id: id
       properties:
         tenant:
-          $ref: '#/components/schemas/Tenant'
+          $ref: "#/components/schemas/Tenant"
       type: object
     TenantListRequest:
       description: TenantListRequest is the message used for the request to list all
@@ -4837,7 +5111,7 @@ components:
         tenants:
           description: tenants is a list of tenants.
           items:
-            $ref: '#/components/schemas/Tenant'
+            $ref: "#/components/schemas/Tenant"
           type: array
         continuous_token:
           description: continuous_token is a string that can be used to paginate and
@@ -4858,11 +5132,11 @@ components:
         relation: relation
       properties:
         entity:
-          $ref: '#/components/schemas/Entity'
+          $ref: "#/components/schemas/Entity"
         relation:
           type: string
         subject:
-          $ref: '#/components/schemas/Subject'
+          $ref: "#/components/schemas/Subject"
       type: object
     TupleFilter:
       description: "TupleFilter is used to filter tuples based on the entity, relation\
@@ -4882,11 +5156,11 @@ components:
         relation: relation
       properties:
         entity:
-          $ref: '#/components/schemas/EntityFilter'
+          $ref: "#/components/schemas/EntityFilter"
         relation:
           type: string
         subject:
-          $ref: '#/components/schemas/SubjectFilter'
+          $ref: "#/components/schemas/SubjectFilter"
       type: object
     TupleSet:
       description: TupleSet represents a set of tuples associated with a specific
@@ -4907,20 +5181,28 @@ components:
           relation: relation
       properties:
         tupleSet:
-          $ref: '#/components/schemas/TupleSet'
+          $ref: "#/components/schemas/TupleSet"
         computed:
-          $ref: '#/components/schemas/ComputedUserSet'
+          $ref: "#/components/schemas/ComputedUserSet"
       type: object
     Values:
-      example:
-        values:
-          key:
-            '@type': '@type'
       properties:
         values:
           additionalProperties:
-            $ref: '#/components/schemas/Any'
+            $ref: "#/components/schemas/Any"
           type: object
+      type: object
+    WatchBody:
+      description: |-
+        WatchRequest is the request message for the Watch RPC. It contains the
+        details needed to establish a watch stream.
+      example:
+        snap_token: snap_token
+      properties:
+        snap_token:
+          description: "The snap token to avoid stale cache, see more details on [Snap\
+            \ Tokens](../../operations/snap-tokens)."
+          type: string
       type: object
     WatchResponse:
       description: |-
@@ -4966,7 +5248,7 @@ components:
             operation: OPERATION_UNSPECIFIED
       properties:
         changes:
-          $ref: '#/components/schemas/DataChanges'
+          $ref: "#/components/schemas/DataChanges"
       type: object
     WellKnownType:
       default: WELL_KNOWN_TYPE_UNSPECIFIED
@@ -4987,6 +5269,38 @@ components:
       - TIMESTAMP
       - DURATION
       type: string
+    WriteRelationshipsBody:
+      description: Represents a request to write relationship data.
+      example:
+        metadata:
+          schema_version: schema_version
+        tuples:
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+        - subject:
+            id: id
+            type: type
+            relation: relation
+          entity:
+            id: id
+            type: type
+          relation: relation
+      properties:
+        metadata:
+          $ref: "#/components/schemas/RelationshipWriteRequestMetadata"
+        tuples:
+          description: List of tuples for the request. Must have between 1 and 100
+            items.
+          items:
+            $ref: "#/components/schemas/Tuple"
+          type: array
+      type: object
     v1.Call:
       description: Call represents a call to a rule. It includes the name of the rule
         and the arguments passed to it.
@@ -5007,9 +5321,14 @@ components:
           type: string
         arguments:
           items:
-            $ref: '#/components/schemas/Argument'
+            $ref: "#/components/schemas/Argument"
           title: Arguments passed to the rule
           type: array
+      type: object
+    v1.Expand:
+      description: |-
+        Expand is used to define a hierarchical structure for permissions.
+        It has an entity, permission, and arguments. The node can be either another hierarchical structure or a set of subjects.
       type: object
     v1.Operation:
       description: |-
@@ -5094,7 +5413,7 @@ components:
             type: string
           type: array
         value:
-          $ref: '#/components/schemas/Constant'
+          $ref: "#/components/schemas/Constant"
       type: object
     v1alpha1.Type:
       description: Represents a CEL type.
@@ -5132,17 +5451,17 @@ components:
           description: Null value.
           type: string
         primitive:
-          $ref: '#/components/schemas/PrimitiveType'
+          $ref: "#/components/schemas/PrimitiveType"
         wrapper:
-          $ref: '#/components/schemas/PrimitiveType'
+          $ref: "#/components/schemas/PrimitiveType"
         wellKnown:
-          $ref: '#/components/schemas/WellKnownType'
+          $ref: "#/components/schemas/WellKnownType"
         listType:
-          $ref: '#/components/schemas/ListType'
+          $ref: "#/components/schemas/ListType"
         mapType:
-          $ref: '#/components/schemas/MapType'
+          $ref: "#/components/schemas/MapType"
         function:
-          $ref: '#/components/schemas/FunctionType'
+          $ref: "#/components/schemas/FunctionType"
         messageType:
           description: |-
             Protocol buffer message type.
@@ -5159,7 +5478,7 @@ components:
             named `E`.
           type: string
         type:
-          $ref: '#/components/schemas/v1alpha1.Type'
+          $ref: "#/components/schemas/v1alpha1.Type"
         error:
           description: |-
             Error type.
@@ -5170,182 +5489,12 @@ components:
           properties: {}
           type: object
         abstractType:
-          $ref: '#/components/schemas/AbstractType'
-      type: object
-    bundle_delete_request:
-      description: |-
-        BundleDeleteRequest is used to request the deletion of a bundle.
-        It contains the tenant_id to specify the tenant and the name of the bundle to be deleted.
-      properties:
-        name:
-          description: Name of the bundle to be deleted.
-          type: string
-      type: object
-    bundle_read_request:
-      properties:
-        name:
-          type: string
-      type: object
-    bundle_write_request:
-      description: |-
-        BundleWriteRequest is used to request the writing of a bundle.
-        It contains the tenant_id to identify the tenant and the Bundles object.
-      properties:
-        bundles:
-          description: Contains the bundle data to be written.
-          items:
-            $ref: '#/components/schemas/DataBundle'
-          type: array
-      type: object
-    data_attributes_read_request:
-      description: |-
-        AttributeReadRequest defines the structure of a request for reading attributes.
-        It includes the tenant_id, metadata, attribute filter, page size for pagination, and a continuous token for multi-page results.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/AttributeReadRequestMetadata'
-        filter:
-          $ref: '#/components/schemas/AttributeFilter'
-        page_size:
-          description: |-
-            page_size specifies the number of results to return in a single page.
-            If more results are available, a continuous_token is included in the response.
-          format: int64
-          type: integer
-        continuous_token:
-          description: continuous_token is used in case of paginated reads to get
-            the next page of results.
-          type: string
-      type: object
-    data_delete_request:
-      description: |-
-        DataDeleteRequest defines the structure of a request to delete data.
-        It includes the tenant_id and filters for selecting tuples and attributes to be deleted.
-      properties:
-        tuple_filter:
-          $ref: '#/components/schemas/TupleFilter'
-        attribute_filter:
-          $ref: '#/components/schemas/AttributeFilter'
-      type: object
-    data_relationships_read_request:
-      description: |-
-        RelationshipReadRequest defines the structure of a request for reading relationships.
-        It contains the necessary information such as tenant_id, metadata, and filter for the read operation.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/RelationshipReadRequestMetadata'
-        filter:
-          $ref: '#/components/schemas/TupleFilter'
-        page_size:
-          description: |-
-            page_size specifies the number of results to return in a single page.
-            If more results are available, a continuous_token is included in the response.
-          format: int64
-          type: integer
-        continuous_token:
-          description: continuous_token is used in case of paginated reads to get
-            the next page of results.
-          type: string
-      type: object
-    bundle_run_request:
-      description: |-
-        BundleRunRequest is used to request the execution of a bundle.
-        It includes tenant_id, the name of the bundle, and additional arguments for execution.
-      properties:
-        name:
-          description: Name of the bundle to be executed.
-          type: string
-        arguments:
-          additionalProperties:
-            type: string
-          description: Additional key-value pairs for execution arguments.
-          type: object
-      type: object
-    data_write_request:
-      description: |-
-        DataWriteRequest defines the structure of a request for writing data.
-        It contains the necessary information such as tenant_id, metadata,
-        tuples and attributes for the write operation.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/DataWriteRequestMetadata'
-        tuples:
-          description: tuples contains the list of tuples (entity-relation-entity
-            triples) that need to be written.
-          items:
-            $ref: '#/components/schemas/Tuple'
-          type: array
-        attributes:
-          description: attributes contains the list of attributes (entity-attribute-value
-            triples) that need to be written.
-          items:
-            $ref: '#/components/schemas/Attribute'
-          type: array
-      type: object
-    permissions_check_request:
-      description: PermissionCheckRequest is the request message for the Check method
-        in the Permission service.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PermissionCheckRequestMetadata'
-        entity:
-          $ref: '#/components/schemas/Entity'
-        permission:
-          description: The action the user wants to perform on the resource
-          type: string
-        subject:
-          $ref: '#/components/schemas/Subject'
-        context:
-          $ref: '#/components/schemas/Context'
-        arguments:
-          description: Additional arguments associated with this request.
-          items:
-            $ref: '#/components/schemas/Argument'
-          type: array
-      type: object
-    permissions_expand_request:
-      description: PermissionExpandRequest is the request message for the Expand method
-        in the Permission service.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PermissionExpandRequestMetadata'
-        entity:
-          $ref: '#/components/schemas/Entity'
-        permission:
-          description: "Name of the permission to be expanded, not required, must\
-            \ start with a letter and can include alphanumeric and underscore, max\
-            \ 64 bytes."
-          type: string
-        context:
-          $ref: '#/components/schemas/Context'
-        arguments:
-          description: Additional arguments associated with this request.
-          items:
-            $ref: '#/components/schemas/Argument'
-          type: array
-      type: object
-    permissions_lookupEntity_request:
-      description: PermissionLookupEntityRequest is the request message for the LookupEntity
-        method in the Permission service.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PermissionLookupEntityRequestMetadata'
-        entity_type:
-          description: "Type of the entity to lookup, required, must start with a\
-            \ letter and can include alphanumeric and underscore, max 64 bytes."
-          type: string
-        permission:
-          description: "Name of the permission to check, required, must start with\
-            \ a letter and can include alphanumeric and underscore, max 64 bytes."
-          type: string
-        subject:
-          $ref: '#/components/schemas/Subject'
-        context:
-          $ref: '#/components/schemas/Context'
+          $ref: "#/components/schemas/AbstractType"
       type: object
     Stream_result_of_PermissionLookupEntityStreamResponse:
       example:
         result:
+          continuous_token: continuous_token
           entity_id: entity_id
         error:
           code: 0
@@ -5355,130 +5504,10 @@ components:
           message: message
       properties:
         result:
-          $ref: '#/components/schemas/PermissionLookupEntityStreamResponse'
+          $ref: "#/components/schemas/PermissionLookupEntityStreamResponse"
         error:
-          $ref: '#/components/schemas/Status'
+          $ref: "#/components/schemas/Status"
       title: Stream result of PermissionLookupEntityStreamResponse
-      type: object
-    permissions_lookupSubject_request:
-      description: PermissionLookupSubjectRequest is the request message for the LookupSubject
-        method in the Permission service.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PermissionLookupSubjectRequestMetadata'
-        entity:
-          $ref: '#/components/schemas/Entity'
-        permission:
-          description: "Permission to be checked, can be a permission or relation.\
-            \ Required, and must match the pattern \"^([a-zA-Z][a-zA-Z0-9_]{1,62}[a-zA-Z0-9])$\"\
-            , max 64 bytes."
-          type: string
-        subject_reference:
-          $ref: '#/components/schemas/RelationReference'
-        context:
-          $ref: '#/components/schemas/Context'
-      type: object
-    permissions_subjectPermission_request:
-      description: PermissionSubjectPermissionRequest is the request message for the
-        SubjectPermission method in the Permission service.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PermissionSubjectPermissionRequestMetadata'
-        entity:
-          $ref: '#/components/schemas/Entity'
-        subject:
-          $ref: '#/components/schemas/Subject'
-        context:
-          $ref: '#/components/schemas/Context'
-      type: object
-    RelationshipDeleteRequest:
-      example:
-        filter:
-          subject:
-            ids:
-            - ids
-            - ids
-            type: type
-            relation: relation
-          entity:
-            ids:
-            - ids
-            - ids
-            type: type
-          relation: relation
-      properties:
-        filter:
-          $ref: '#/components/schemas/TupleFilter'
-      title: RelationshipDeleteRequest
-      type: object
-    relationships_write_request:
-      description: Represents a request to write relationship data.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/RelationshipWriteRequestMetadata'
-        tuples:
-          description: List of tuples for the request. Must have between 1 and 100
-            items.
-          items:
-            $ref: '#/components/schemas/Tuple'
-          type: array
-      type: object
-    schemas_list_request:
-      description: |-
-        SchemaListRequest is the request message for the List method in the Schema service.
-        It contains tenant_id for which the schemas are to be listed.
-      properties:
-        page_size:
-          description: |-
-            page_size is the number of tenants to be returned in the response.
-            The value should be between 1 and 100.
-          format: int64
-          type: integer
-        continuous_token:
-          description: |-
-            continuous_token is an optional parameter used for pagination.
-            It should be the value received in the previous response.
-          type: string
-      type: object
-    ? It_contains_the_tenant_id_to_identify_the_tenant_and_metadata_of_the_schema_to_be_edited__with_the_corresponding_edits_to_various_entities
-    : properties:
-        metadata:
-          $ref: '#/components/schemas/SchemaPartialWriteRequestMetadata'
-        partials:
-          additionalProperties:
-            $ref: '#/components/schemas/Partials'
-          title: Map of entity name with the values needed to be updated
-          type: object
-      title: |-
-        It contains the tenant_id to identify the tenant and metadata of the schema to be edited,
-        with the corresponding edits to various entities
-      type: object
-    schemas_read_request:
-      description: |-
-        SchemaReadRequest is the request message for the Read method in the Schema service.
-        It contains tenant_id and metadata about the schema to be read.
-      properties:
-        metadata:
-          $ref: '#/components/schemas/SchemaReadRequestMetadata'
-      type: object
-    schemas_write_request:
-      description: |-
-        SchemaWriteRequest is the request message for the Write method in the Schema service.
-        It contains tenant_id and the schema to be written.
-      properties:
-        schema:
-          description: schema is the string representation of the schema to be written.
-          type: string
-      type: object
-    watch_watch_request:
-      description: |-
-        WatchRequest is the request message for the Watch RPC. It contains the
-        details needed to establish a watch stream.
-      properties:
-        snap_token:
-          description: "The snap token to avoid stale cache, see more details on [Snap\
-            \ Tokens](../../operations/snap-tokens)."
-          type: string
       type: object
     Stream_result_of_WatchResponse:
       example:
@@ -5528,9 +5557,9 @@ components:
           message: message
       properties:
         result:
-          $ref: '#/components/schemas/WatchResponse'
+          $ref: "#/components/schemas/WatchResponse"
         error:
-          $ref: '#/components/schemas/Status'
+          $ref: "#/components/schemas/Status"
       title: Stream result of WatchResponse
       type: object
   securitySchemes:

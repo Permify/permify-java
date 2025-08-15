@@ -9,7 +9,7 @@ ExpandTreeNode represents a node in an expansion tree with a specific operation 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**operation** | **ExpandTreeNodeOperation** |  |  [optional] |
-|**children** | [**List&lt;Expand&gt;**](Expand.md) |  |  [optional] |
+|**children** | **List&lt;Object&gt;** |  |  [optional] |
 
 
 
