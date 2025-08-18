@@ -1,0 +1,61 @@
+# This workflow generates the Java SDK from the Permify OpenAPI specification
+# It fetches the latest openapi.json from the Permify repository and runs the SDK generation script
+
+name: Generate Java SDK
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+  push:
+    paths:
+      - 'generator/**'
+      - '.github/workflows/generator.yml'
+
+jobs:
+  generate:
+    name: Generate SDK from OpenAPI
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Download OpenAPI spec from Permify repository
+      run: |
+        echo "Downloading latest OpenAPI specification from Permify repository..."
+        curl -L -o generator/openapi.json https://raw.githubusercontent.com/Permify/permify/master/docs/api-reference/openapi.json
+        
+    - name: Check if OpenAPI spec has changed
+      id: check_changes
+      run: |
+        if git diff --quiet generator/openapi.json; then
+          echo "No changes in OpenAPI specification"
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "OpenAPI specification has changed"
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Make generate script executable
+      if: steps.check_changes.outputs.changed == 'true'
+      run: chmod +x generator/generate-sdk.sh
+      
+    - name: Generate Java SDK
+      if: steps.check_changes.outputs.changed == 'true'
+      run: |
+        cd generator
+        ./generate-sdk.sh
+        
+    - name: Configure Git
+      if: steps.check_changes.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Commit and push changes
+      if: steps.check_changes.outputs.changed == 'true'
+      run: |
+        git add .
+        git commit -m "chore: update Java SDK from latest OpenAPI specification" || exit 0
+        git push
