@@ -21,6 +21,5 @@ target
 build
 private-key.asc
 gradle.properties
-generator/
 _gradle.properties
 .openapi-generator

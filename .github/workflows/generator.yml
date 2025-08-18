@@ -5,8 +5,6 @@ name: Generate Java SDK
 
 on:
   workflow_dispatch:
-  release:
-    types: [published]
   push:
     paths:
       - 'generator/**'
@@ -24,7 +22,7 @@ jobs:
     - name: Download OpenAPI spec from Permify repository
       run: |
         echo "Downloading latest OpenAPI specification from Permify repository..."
-        curl -L -o generator/openapi.json https://raw.githubusercontent.com/Permify/permify/master/docs/api-reference/openapi.json
+        curl -L -o generator/openapi.json https://raw.githubusercontent.com/Permify/permify/master/docs/api-reference/openapiv2/apidocs.swagger.json
         
     - name: Check if OpenAPI spec has changed
       id: check_changes
