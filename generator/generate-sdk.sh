@@ -65,9 +65,9 @@ if [[ ! -f "${OPENAPI_FILE}" ]]; then
     exit 1
 fi
 
-if ! command -v docker &> /dev/null; then
-    echo "Error: Docker is required but not installed"
-    echo "Please install Docker: https://docs.docker.com/get-docker/"
+# Check if Java is available
+if ! command -v java &> /dev/null; then
+    echo "Error: Java is required but not installed"
     exit 1
 fi
 
@@ -90,13 +90,18 @@ echo "  Client name: ${CLIENT_NAME}"
 echo "  Temp directory: ${TEMP_OUTPUT_DIR}"
 echo ""
 
-docker run --rm \
-    -v "${OPENAPI_ABSOLUTE_PATH}:/local/openapi.json:ro" \
-    -v "${TEMP_OUTPUT_DIR}:/local/out" \
-    openapitools/openapi-generator-cli:latest generate \
-    -i /local/openapi.json \
+# Download OpenAPI Generator CLI JAR if not present
+GENERATOR_JAR="${SCRIPT_DIR}/openapi-generator-cli.jar"
+if [[ ! -f "${GENERATOR_JAR}" ]]; then
+    echo "Downloading OpenAPI Generator CLI..."
+    curl -L -o "${GENERATOR_JAR}" https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.2.0/openapi-generator-cli-7.2.0.jar
+fi
+
+# Generate SDK using OpenAPI Generator CLI
+java -jar "${GENERATOR_JAR}" generate \
+    -i "${OPENAPI_ABSOLUTE_PATH}" \
     -g java \
-    -o /local/out \
+    -o "${TEMP_OUTPUT_DIR}" \
     --package-name="${PACKAGE_NAME}" \
     --api-package="${PACKAGE_NAME}.api" \
     --model-package="${PACKAGE_NAME}.model" \
