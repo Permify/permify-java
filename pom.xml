@@ -5,7 +5,7 @@
     <artifactId>permify-java</artifactId>
     <packaging>jar</packaging>
     <name>Permify Java</name>
-    <version>1.0.3</version>
+    <version>1.4.2</version>
     <url>https://github.com/Permify/permify-java</url>
     <description>Java SDK for Permify - Authorization as a Service</description>
     <scm>

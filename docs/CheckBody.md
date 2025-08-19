@@ -1,6 +1,6 @@
 
 
-# PermissionCheckBody
+# CheckBody
 
 PermissionCheckRequest is the request message for the Check method in the Permission service.
 

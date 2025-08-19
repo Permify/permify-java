@@ -42,7 +42,7 @@ public class Example {
 
         PermissionApi apiInstance = new PermissionApi(defaultClient);
         String tenantId = "tenantId_example"; // String | Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant <code>t1</code> for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes.
-        PermissionCheckBody body = new PermissionCheckBody(); // PermissionCheckBody | 
+        CheckBody body = new CheckBody(); // CheckBody | 
         try {
             PermissionCheckResponse result = apiInstance.permissionsCheck(tenantId, body);
             System.out.println(result);
@@ -63,7 +63,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **tenantId** | **String**| Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant &lt;code&gt;t1&lt;/code&gt; for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes. | |
-| **body** | [**PermissionCheckBody**](PermissionCheckBody.md)|  | |
+| **body** | [**CheckBody**](CheckBody.md)|  | |
 
 ### Return type
 
@@ -109,7 +109,7 @@ public class Example {
 
         PermissionApi apiInstance = new PermissionApi(defaultClient);
         String tenantId = "tenantId_example"; // String | Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant <code>t1</code> for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes.
-        PermissionCheckBody body = new PermissionCheckBody(); // PermissionCheckBody | 
+        CheckBody body = new CheckBody(); // CheckBody | 
         try {
             ApiResponse<PermissionCheckResponse> response = apiInstance.permissionsCheckWithHttpInfo(tenantId, body);
             System.out.println("Status code: " + response.getStatusCode());
@@ -132,7 +132,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **tenantId** | **String**| Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant &lt;code&gt;t1&lt;/code&gt; for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes. | |
-| **body** | [**PermissionCheckBody**](PermissionCheckBody.md)|  | |
+| **body** | [**CheckBody**](CheckBody.md)|  | |
 
 ### Return type
 

@@ -5,11 +5,9 @@
 ## Enum
 
 
-* `REFERENCE_UNSPECIFIED` (value: `"REFERENCE_UNSPECIFIED"`)
+* `ENTITY` (value: `"REFERENCE_ENTITY"`)
 
-* `REFERENCE_ENTITY` (value: `"REFERENCE_ENTITY"`)
-
-* `REFERENCE_RULE` (value: `"REFERENCE_RULE"`)
+* `RULE` (value: `"REFERENCE_RULE"`)
 
 
 
