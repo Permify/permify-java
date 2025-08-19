@@ -26,3 +26,5 @@ _gradle.properties
 
 
 *.bak
+.gradle/
+.openapi-generator/
