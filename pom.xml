@@ -195,8 +195,6 @@
     </profiles>
 
     <dependencies>
-
-        <!-- JSON processing: jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -222,8 +220,6 @@
             <artifactId>jackson-databind-nullable</artifactId>
             <version>${jackson-databind-nullable-version}</version>
         </dependency>
-
-        <!-- @Nullable annotation -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
@@ -235,13 +231,10 @@
             <version>${jakarta-annotation-version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- test dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <version>${junit-version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -253,7 +246,7 @@
         <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
         <jakarta-annotation-version>2.1.1</jakarta-annotation-version>
         <beanvalidation-version>3.0.2</beanvalidation-version>
-        <junit-version>5.10.2</junit-version>
         <spotless.version>2.27.2</spotless.version>
+        <junit-version>4.13.2</junit-version>
     </properties>
 </project>

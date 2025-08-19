@@ -19,10 +19,12 @@ usage() {
     echo "  -c, --client NAME       Client class name (default: ${DEFAULT_CLIENT_NAME})"
     echo "  -h, --help              Show this help message"
     echo ""
-    echo "This script will update the following directories:"
-    echo "  - ../api"
-    echo "  - ../src"
-    echo "  - ../docs"
+    echo "This script will update the following:"
+    echo "  - ../api (OpenAPI spec)"
+    echo "  - ../src (generated source code)"
+    echo "  - ../docs (API documentation)"
+    echo "  - ../pom.xml (dependencies and version)"
+    echo "  - ../build.gradle (dependencies and version)"
     echo ""
     echo "Examples:"
     echo "  $0                                    # Use defaults"
@@ -152,6 +154,169 @@ if [[ -d "${TEMP_OUTPUT_DIR}/docs" ]]; then
     cp "${TEMP_OUTPUT_DIR}/docs/"*.md "${DOCS_DIR}/"
 fi
 
+# Function to update dependencies in pom.xml
+update_pom_dependencies() {
+    local generated_pom="${TEMP_OUTPUT_DIR}/pom.xml"
+    local target_pom="${PROJECT_ROOT}/pom.xml"
+    
+    if [[ ! -f "${generated_pom}" ]] || [[ ! -f "${target_pom}" ]]; then
+        echo "    ⚠️  Warning: Generated or target pom.xml not found, skipping dependency update"
+        return
+    fi
+    
+    echo "  Extracting and updating dependencies from generated pom.xml"
+    
+    # Extract dependencies from generated pom.xml (excluding test dependencies)
+    local temp_deps=$(mktemp)
+    sed -n '/<dependencies>/,/<\/dependencies>/p' "${generated_pom}" | \
+        grep -v '<scope>test</scope>' | \
+        sed -n '/<dependency>/,/<\/dependency>/p' > "${temp_deps}"
+    
+    if [[ -s "${temp_deps}" ]]; then
+        # Create a backup of the current pom.xml
+        cp "${target_pom}" "${target_pom}.bak"
+        
+        # Remove existing dependencies section and add new ones
+        if command -v awk &> /dev/null; then
+            awk '
+            /<dependencies>/ { 
+                print; 
+                while ((getline line < "'${temp_deps}'") > 0) print line; 
+                close("'${temp_deps}'");
+                # Skip until end of dependencies
+                while (getline && !/^[[:space:]]*<\/dependencies>/) continue;
+                print;
+                next;
+            }
+            { print }
+            ' "${target_pom}" > "${target_pom}.tmp" && mv "${target_pom}.tmp" "${target_pom}"
+            echo "    ✅ Updated pom.xml dependencies"
+        else
+            echo "    ⚠️  Warning: awk not available, could not update dependencies"
+        fi
+    else
+        echo "    ⚠️  Warning: No dependencies found in generated pom.xml"
+    fi
+    
+    rm -f "${temp_deps}"
+}
+
+# Function to update dependencies in build.gradle
+update_gradle_dependencies() {
+    local generated_gradle="${TEMP_OUTPUT_DIR}/build.gradle"
+    local target_gradle="${PROJECT_ROOT}/build.gradle"
+    
+    if [[ ! -f "${generated_gradle}" ]] || [[ ! -f "${target_gradle}" ]]; then
+        echo "    ⚠️  Warning: Generated or target build.gradle not found, skipping dependency update"
+        return
+    fi
+    
+    echo "  Extracting and updating dependencies from generated build.gradle"
+    
+    # Extract implementation dependencies from generated build.gradle
+    local temp_deps=$(mktemp)
+    sed -n '/^dependencies {/,/^}/p' "${generated_gradle}" | \
+        grep -E '^\s*(implementation|api|compileOnly)\s+' | \
+        grep -v 'testImplementation\|testCompileOnly' > "${temp_deps}"
+    
+    if [[ -s "${temp_deps}" ]]; then
+        # Create a backup of the current build.gradle
+        cp "${target_gradle}" "${target_gradle}.bak"
+        
+        # Update dependencies section
+        if command -v awk &> /dev/null; then
+            awk '
+            /^dependencies {/ { 
+                print;
+                # Add new dependencies
+                while ((getline line < "'${temp_deps}'") > 0) {
+                    if (line !~ /testImplementation/) print "    " line;
+                }
+                close("'${temp_deps}'");
+                # Keep existing testImplementation lines
+                while (getline && !/^}/) {
+                    if ($0 ~ /testImplementation/) print;
+                }
+                print "}";
+                next;
+            }
+            { print }
+            ' "${target_gradle}" > "${target_gradle}.tmp" && mv "${target_gradle}.tmp" "${target_gradle}"
+            echo "    ✅ Updated build.gradle dependencies"
+        else
+            echo "    ⚠️  Warning: awk not available, could not update dependencies"
+        fi
+    else
+        echo "    ⚠️  Warning: No implementation dependencies found in generated build.gradle"
+    fi
+    
+    rm -f "${temp_deps}"
+}
+
+# Function to extract and update version properties
+update_version_properties() {
+    local generated_pom="${TEMP_OUTPUT_DIR}/pom.xml"
+    local target_pom="${PROJECT_ROOT}/pom.xml"
+    local generated_gradle="${TEMP_OUTPUT_DIR}/build.gradle"
+    local target_gradle="${PROJECT_ROOT}/build.gradle"
+    
+    echo "  Updating version properties from generated files"
+    
+    # Update properties in pom.xml
+    if [[ -f "${generated_pom}" ]] && [[ -f "${target_pom}" ]]; then
+        local temp_props=$(mktemp)
+        sed -n '/<properties>/,/<\/properties>/p' "${generated_pom}" | \
+            grep -E '^\s*<[^>]*-version>' | \
+            grep -v '<maven.compiler\|<project.build' > "${temp_props}"
+        
+        if [[ -s "${temp_props}" ]]; then
+            # Update existing properties with new versions
+            while IFS= read -r prop_line; do
+                local prop_name=$(echo "${prop_line}" | sed -n 's/.*<\([^>]*\)>.*/\1/p')
+                local prop_value=$(echo "${prop_line}" | sed -n 's/.*<[^>]*>\([^<]*\)<.*/\1/p')
+                
+                if [[ -n "${prop_name}" ]] && [[ -n "${prop_value}" ]]; then
+                    if grep -q "<${prop_name}>" "${target_pom}"; then
+                        if [[ "$OSTYPE" == "darwin"* ]]; then
+                            sed -i '' "s|<${prop_name}>[^<]*</${prop_name}>|<${prop_name}>${prop_value}</${prop_name}>|g" "${target_pom}"
+                        else
+                            sed -i "s|<${prop_name}>[^<]*</${prop_name}>|<${prop_name}>${prop_value}</${prop_name}>|g" "${target_pom}"
+                        fi
+                    fi
+                fi
+            done < "${temp_props}"
+            echo "    ✅ Updated version properties in pom.xml"
+        fi
+        rm -f "${temp_props}"
+    fi
+    
+    # Update ext properties in build.gradle
+    if [[ -f "${generated_gradle}" ]] && [[ -f "${target_gradle}" ]]; then
+        local temp_ext=$(mktemp)
+        sed -n '/^ext {/,/^}/p' "${generated_gradle}" | \
+            grep -E '^\s*[a-zA-Z_][a-zA-Z0-9_]*\s*=' > "${temp_ext}"
+        
+        if [[ -s "${temp_ext}" ]]; then
+            while IFS= read -r ext_line; do
+                local var_name=$(echo "${ext_line}" | sed -n 's/^\s*\([a-zA-Z_][a-zA-Z0-9_]*\)\s*=.*/\1/p')
+                local var_value=$(echo "${ext_line}" | sed -n 's/.*=\s*\(.*\)$/\1/p')
+                
+                if [[ -n "${var_name}" ]] && [[ -n "${var_value}" ]]; then
+                    if grep -q "${var_name} =" "${target_gradle}"; then
+                        if [[ "$OSTYPE" == "darwin"* ]]; then
+                            sed -i '' "s|${var_name} = .*|${var_name} = ${var_value}|g" "${target_gradle}"
+                        else
+                            sed -i "s|${var_name} = .*|${var_name} = ${var_value}|g" "${target_gradle}"
+                        fi
+                    fi
+                fi
+            done < "${temp_ext}"
+            echo "    ✅ Updated ext properties in build.gradle"
+        fi
+        rm -f "${temp_ext}"
+    fi
+}
+
 # Strip 'v' prefix from version if present
 VERSION_WITHOUT_V="${OPENAPI_VERSION#v}"
 echo "  Updating version in pom.xml to ${VERSION_WITHOUT_V}"
@@ -180,10 +345,36 @@ else
     echo "    ⚠️  Warning: pom.xml not found at ${POM_FILE}"
 fi
 
+# Update build.gradle version
+GRADLE_FILE="${PROJECT_ROOT}/build.gradle"
+if [[ -f "${GRADLE_FILE}" ]]; then
+    echo "  Updating version in build.gradle to ${VERSION_WITHOUT_V}"
+    if command -v sed &> /dev/null; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s|^version = .*|version = '${VERSION_WITHOUT_V}'|g" "${GRADLE_FILE}"
+        else
+            sed -i "s|^version = .*|version = '${VERSION_WITHOUT_V}'|g" "${GRADLE_FILE}"
+        fi
+        echo "    ✅ Updated build.gradle version to ${VERSION_WITHOUT_V}"
+    else
+        echo "    ⚠️  Warning: sed not available, could not update build.gradle version"
+    fi
+else
+    echo "    ⚠️  Warning: build.gradle not found at ${GRADLE_FILE}"
+fi
+
+# Update dependencies and version properties
+update_pom_dependencies
+update_gradle_dependencies
+update_version_properties
+
 echo ""
 echo "✅ Java SDK updated successfully!"
 echo "📁 Updated directories:"
 echo "   - ${API_DIR}"
 echo "   - ${SRC_DIR}"
 echo "   - ${DOCS_DIR}"
-echo "📝 Updated version in pom.xml to ${OPENAPI_VERSION}"
+echo "📝 Updated version to ${VERSION_WITHOUT_V}"
+echo "🔗 Updated dependencies and version properties in:"
+echo "   - pom.xml"
+echo "   - build.gradle"
