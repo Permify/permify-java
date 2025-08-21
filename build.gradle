@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'co.permify'
-version = '1.4.2'
+version = '1.4.3'
 
 repositories {
     mavenCentral()
@@ -119,8 +119,8 @@ task execute(type: JavaExec) {
 }
 
 ext {
-    jackson_version = "2.17.1"
-    jakarta_annotation_version = "2.1.1"
+    jackson_version = "2.14.1"
+    jakarta_annotation_version = "1.3.5"
     beanvalidation_version = "3.0.2"
     junit_version = "4.13.2"
 }
