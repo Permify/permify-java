@@ -4,6 +4,8 @@ All URIs are relative to *http://localhost*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
+| [**permissionsBulkCheck**](PermissionApi.md#permissionsBulkCheck) | **POST** /v1/tenants/{tenant_id}/permissions/bulk-check | bulk check api |
+| [**permissionsBulkCheckWithHttpInfo**](PermissionApi.md#permissionsBulkCheckWithHttpInfo) | **POST** /v1/tenants/{tenant_id}/permissions/bulk-check | bulk check api |
 | [**permissionsCheck**](PermissionApi.md#permissionsCheck) | **POST** /v1/tenants/{tenant_id}/permissions/check | check api |
 | [**permissionsCheckWithHttpInfo**](PermissionApi.md#permissionsCheckWithHttpInfo) | **POST** /v1/tenants/{tenant_id}/permissions/check | check api |
 | [**permissionsExpand**](PermissionApi.md#permissionsExpand) | **POST** /v1/tenants/{tenant_id}/permissions/expand | expand api |
@@ -17,6 +19,146 @@ All URIs are relative to *http://localhost*
 | [**permissionsSubjectPermission**](PermissionApi.md#permissionsSubjectPermission) | **POST** /v1/tenants/{tenant_id}/permissions/subject-permission | subject permission |
 | [**permissionsSubjectPermissionWithHttpInfo**](PermissionApi.md#permissionsSubjectPermissionWithHttpInfo) | **POST** /v1/tenants/{tenant_id}/permissions/subject-permission | subject permission |
 
+
+
+## permissionsBulkCheck
+
+> PermissionBulkCheckResponse permissionsBulkCheck(tenantId, body)
+
+bulk check api
+
+Check multiple permissions in a single request. Maximum 100 requests allowed.
+
+### Example
+
+```java
+// Import classes:
+import co.permify.sdk.client.ApiClient;
+import co.permify.sdk.client.ApiException;
+import co.permify.sdk.client.Configuration;
+import co.permify.sdk.client.models.*;
+import co.permify.sdk.api.PermissionApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+
+        PermissionApi apiInstance = new PermissionApi(defaultClient);
+        String tenantId = "tenantId_example"; // String | Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant <code>t1</code> for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes.
+        BulkCheckBody body = new BulkCheckBody(); // BulkCheckBody | 
+        try {
+            PermissionBulkCheckResponse result = apiInstance.permissionsBulkCheck(tenantId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PermissionApi#permissionsBulkCheck");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **tenantId** | **String**| Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant &lt;code&gt;t1&lt;/code&gt; for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes. | |
+| **body** | [**BulkCheckBody**](BulkCheckBody.md)|  | |
+
+### Return type
+
+[**PermissionBulkCheckResponse**](PermissionBulkCheckResponse.md)
+
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | A successful response. |  -  |
+| **0** | An unexpected error response. |  -  |
+
+## permissionsBulkCheckWithHttpInfo
+
+> ApiResponse<PermissionBulkCheckResponse> permissionsBulkCheck permissionsBulkCheckWithHttpInfo(tenantId, body)
+
+bulk check api
+
+Check multiple permissions in a single request. Maximum 100 requests allowed.
+
+### Example
+
+```java
+// Import classes:
+import co.permify.sdk.client.ApiClient;
+import co.permify.sdk.client.ApiException;
+import co.permify.sdk.client.ApiResponse;
+import co.permify.sdk.client.Configuration;
+import co.permify.sdk.client.models.*;
+import co.permify.sdk.api.PermissionApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+
+        PermissionApi apiInstance = new PermissionApi(defaultClient);
+        String tenantId = "tenantId_example"; // String | Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant <code>t1</code> for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes.
+        BulkCheckBody body = new BulkCheckBody(); // BulkCheckBody | 
+        try {
+            ApiResponse<PermissionBulkCheckResponse> response = apiInstance.permissionsBulkCheckWithHttpInfo(tenantId, body);
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println("Response headers: " + response.getHeaders());
+            System.out.println("Response body: " + response.getData());
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PermissionApi#permissionsBulkCheck");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            System.err.println("Reason: " + e.getResponseBody());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **tenantId** | **String**| Identifier of the tenant, if you are not using multi-tenancy (have only one tenant) use pre-inserted tenant &lt;code&gt;t1&lt;/code&gt; for this field. Required, and must match the pattern \\“[a-zA-Z0-9-,]+\\“, max 64 bytes. | |
+| **body** | [**BulkCheckBody**](BulkCheckBody.md)|  | |
+
+### Return type
+
+ApiResponse<[**PermissionBulkCheckResponse**](PermissionBulkCheckResponse.md)>
+
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | A successful response. |  -  |
+| **0** | An unexpected error response. |  -  |
 
 
 ## permissionsCheck
