@@ -26,21 +26,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Operation enum includes potential rewrite operations. OPERATION_UNION: Represents a union operation. OPERATION_INTERSECTION: Represents an intersection operation. OPERATION_EXCLUSION: Represents an exclusion operation.   - OPERATION_UNSPECIFIED: Default, unspecified operation.  - OPERATION_UNION: Represents a union operation.  - OPERATION_INTERSECTION: Represents an intersection operation.  - OPERATION_EXCLUSION: Represents an exclusion operation.
+ * &#x60;NullValue&#x60; is a singleton enumeration to represent the null value for the &#x60;Value&#x60; type union.  The JSON representation for &#x60;NullValue&#x60; is JSON &#x60;null&#x60;.   - NULL_VALUE: Null value.
  */
-public enum RewriteOperation {
+public enum NullValue {
   
-  UNSPECIFIED("OPERATION_UNSPECIFIED"),
-  
-  UNION("OPERATION_UNION"),
-  
-  INTERSECTION("OPERATION_INTERSECTION"),
-  
-  EXCLUSION("OPERATION_EXCLUSION");
+  NULL_VALUE("NULL_VALUE");
 
   private String value;
 
-  RewriteOperation(String value) {
+  NullValue(String value) {
     this.value = value;
   }
 
@@ -55,8 +49,8 @@ public enum RewriteOperation {
   }
 
   @JsonCreator
-  public static RewriteOperation fromValue(String value) {
-    for (RewriteOperation b : RewriteOperation.values()) {
+  public static NullValue fromValue(String value) {
+    for (NullValue b : NullValue.values()) {
       if (b.value.equals(value)) {
         return b;
       }

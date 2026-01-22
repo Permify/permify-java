@@ -18,15 +18,15 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Model tests for PrimitiveType
+ * Model tests for NullValue
  */
-public class PrimitiveTypeTest {
+public class NullValueTest {
     /**
-     * Model tests for PrimitiveType
+     * Model tests for NullValue
      */
     @Test
-    public void testPrimitiveType() {
-        // TODO: test PrimitiveType
+    public void testNullValue() {
+        // TODO: test NullValue
     }
 
 }
