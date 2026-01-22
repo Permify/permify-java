@@ -3,7 +3,7 @@
   "info": {
     "title": "Permify API",
     "description": "Permify is an open source authorization service for creating fine-grained and scalable authorization systems.",
-    "version": "v1.6.0",
+    "version": "v1.6.1",
     "contact": {
       "name": "API Support",
       "url": "https://github.com/Permify/permify/issues",
@@ -1507,7 +1507,6 @@
     "AttributeType": {
       "type": "string",
       "enum": [
-        "ATTRIBUTE_TYPE_UNSPECIFIED",
         "ATTRIBUTE_TYPE_BOOLEAN",
         "ATTRIBUTE_TYPE_BOOLEAN_ARRAY",
         "ATTRIBUTE_TYPE_STRING",
@@ -1517,8 +1516,7 @@
         "ATTRIBUTE_TYPE_DOUBLE",
         "ATTRIBUTE_TYPE_DOUBLE_ARRAY"
       ],
-      "default": "ATTRIBUTE_TYPE_UNSPECIFIED",
-      "description": "Enumerates the types of attribute.\n\n - ATTRIBUTE_TYPE_UNSPECIFIED: Not specified attribute type. This is the default value.\n - ATTRIBUTE_TYPE_BOOLEAN: A boolean attribute type.\n - ATTRIBUTE_TYPE_BOOLEAN_ARRAY: A boolean array attribute type.\n - ATTRIBUTE_TYPE_STRING: A string attribute type.\n - ATTRIBUTE_TYPE_STRING_ARRAY: A string array attribute type.\n - ATTRIBUTE_TYPE_INTEGER: An integer attribute type.\n - ATTRIBUTE_TYPE_INTEGER_ARRAY: An integer array attribute type.\n - ATTRIBUTE_TYPE_DOUBLE: A double attribute type.\n - ATTRIBUTE_TYPE_DOUBLE_ARRAY: A double array attribute type."
+      "description": "Enumerates the types of attribute.\n\n - ATTRIBUTE_TYPE_BOOLEAN: A boolean attribute type.\n - ATTRIBUTE_TYPE_BOOLEAN_ARRAY: A boolean array attribute type.\n - ATTRIBUTE_TYPE_STRING: A string attribute type.\n - ATTRIBUTE_TYPE_STRING_ARRAY: A string array attribute type.\n - ATTRIBUTE_TYPE_INTEGER: An integer attribute type.\n - ATTRIBUTE_TYPE_INTEGER_ARRAY: An integer array attribute type.\n - ATTRIBUTE_TYPE_DOUBLE: A double attribute type.\n - ATTRIBUTE_TYPE_DOUBLE_ARRAY: A double array attribute type."
     },
     "BulkCheckBody": {
       "type": "object",
@@ -1659,12 +1657,10 @@
     "CheckResult": {
       "type": "string",
       "enum": [
-        "CHECK_RESULT_UNSPECIFIED",
         "CHECK_RESULT_ALLOWED",
         "CHECK_RESULT_DENIED"
       ],
-      "default": "CHECK_RESULT_UNSPECIFIED",
-      "description": "Enumerates results of a check operation.\n\n - CHECK_RESULT_UNSPECIFIED: Not specified check result. This is the default value.\n - CHECK_RESULT_ALLOWED: Represents a successful check (the check allowed the operation).\n - CHECK_RESULT_DENIED: Represents a failed check (the check denied the operation)."
+      "description": "Enumerates results of a check operation.\n\n - CHECK_RESULT_ALLOWED: Represents a successful check (the check allowed the operation).\n - CHECK_RESULT_DENIED: Represents a failed check (the check denied the operation)."
     },
     "CheckedExpr": {
       "type": "object",
@@ -1715,13 +1711,11 @@
     "Component": {
       "type": "string",
       "enum": [
-        "COMPONENT_UNSPECIFIED",
         "COMPONENT_PARSER",
         "COMPONENT_TYPE_CHECKER",
         "COMPONENT_RUNTIME"
       ],
-      "default": "COMPONENT_UNSPECIFIED",
-      "description": "CEL component specifier.\n\n - COMPONENT_UNSPECIFIED: Unspecified, default.\n - COMPONENT_PARSER: Parser. Converts a CEL string to an AST.\n - COMPONENT_TYPE_CHECKER: Type checker. Checks that references in an AST are defined and types\nagree.\n - COMPONENT_RUNTIME: Runtime. Evaluates a parsed and optionally checked CEL AST against a\ncontext."
+      "description": "CEL component specifier.\n\n - COMPONENT_PARSER: Parser. Converts a CEL string to an AST.\n - COMPONENT_TYPE_CHECKER: Type checker. Checks that references in an AST are defined and types\nagree.\n - COMPONENT_RUNTIME: Runtime. Evaluates a parsed and optionally checked CEL AST against a\ncontext."
     },
     "Comprehension": {
       "type": "object",
@@ -1980,12 +1974,10 @@
     "DataChange.Operation": {
       "type": "string",
       "enum": [
-        "OPERATION_UNSPECIFIED",
         "OPERATION_CREATE",
         "OPERATION_DELETE"
       ],
-      "default": "OPERATION_UNSPECIFIED",
-      "description": " - OPERATION_UNSPECIFIED: Default operation, not specified.\n - OPERATION_CREATE: Creation operation.\n - OPERATION_DELETE: Deletion operation."
+      "description": " - OPERATION_CREATE: Creation operation.\n - OPERATION_DELETE: Deletion operation."
     },
     "DataChanges": {
       "type": "object",
@@ -2097,13 +2089,11 @@
     "EntityDefinition.Reference": {
       "type": "string",
       "enum": [
-        "REFERENCE_UNSPECIFIED",
         "REFERENCE_RELATION",
         "REFERENCE_PERMISSION",
         "REFERENCE_ATTRIBUTE"
       ],
-      "default": "REFERENCE_UNSPECIFIED",
-      "description": "The Reference enum specifies whether a name pertains to a relation, permission, or attribute.\n\n - REFERENCE_UNSPECIFIED: Default, unspecified reference.\n - REFERENCE_RELATION: Indicates that the name refers to a relation.\n - REFERENCE_PERMISSION: Indicates that the name refers to a permission.\n - REFERENCE_ATTRIBUTE: Indicates that the name refers to an attribute."
+      "description": "The Reference enum specifies whether a name pertains to a relation, permission, or attribute.\n\n - REFERENCE_RELATION: Indicates that the name refers to a relation.\n - REFERENCE_PERMISSION: Indicates that the name refers to a permission.\n - REFERENCE_ATTRIBUTE: Indicates that the name refers to an attribute."
     },
     "EntityFilter": {
       "type": "object",
@@ -2188,12 +2178,10 @@
     "ExpandTreeNode.Operation": {
       "type": "string",
       "enum": [
-        "OPERATION_UNSPECIFIED",
         "OPERATION_UNION",
         "OPERATION_INTERSECTION",
         "OPERATION_EXCLUSION"
       ],
-      "default": "OPERATION_UNSPECIFIED",
       "description": "Operation is an enum representing the type of operation to be applied on the tree node."
     },
     "Expr": {
@@ -2481,11 +2469,7 @@
     },
     "NullValue": {
       "type": "string",
-      "enum": [
-        "NULL_VALUE"
-      ],
-      "default": "NULL_VALUE",
-      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
+      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`."
     },
     "PartialWriteBody": {
       "type": "object",
@@ -2798,7 +2782,6 @@
     "PrimitiveType": {
       "type": "string",
       "enum": [
-        "PRIMITIVE_TYPE_UNSPECIFIED",
         "BOOL",
         "INT64",
         "UINT64",
@@ -2806,8 +2789,7 @@
         "STRING",
         "BYTES"
       ],
-      "default": "PRIMITIVE_TYPE_UNSPECIFIED",
-      "description": "CEL primitive types.\n\n - PRIMITIVE_TYPE_UNSPECIFIED: Unspecified type.\n - BOOL: Boolean type.\n - INT64: Int64 type.\n\nProto-based integer values are widened to int64.\n - UINT64: Uint64 type.\n\nProto-based unsigned integer values are widened to uint64.\n - DOUBLE: Double type.\n\nProto-based float values are widened to double values.\n - STRING: String type.\n - BYTES: Bytes type."
+      "description": "CEL primitive types.\n\n - BOOL: Boolean type.\n - INT64: Int64 type.\n\nProto-based integer values are widened to int64.\n - UINT64: Uint64 type.\n\nProto-based unsigned integer values are widened to uint64.\n - DOUBLE: Double type.\n\nProto-based float values are widened to double values.\n - STRING: String type.\n - BYTES: Bytes type."
     },
     "ReadAttributesBody": {
       "type": "object",
@@ -2965,13 +2947,11 @@
     "Rewrite.Operation": {
       "type": "string",
       "enum": [
-        "OPERATION_UNSPECIFIED",
         "OPERATION_UNION",
         "OPERATION_INTERSECTION",
         "OPERATION_EXCLUSION"
       ],
-      "default": "OPERATION_UNSPECIFIED",
-      "description": "Operation enum includes potential rewrite operations.\nOPERATION_UNION: Represents a union operation.\nOPERATION_INTERSECTION: Represents an intersection operation.\nOPERATION_EXCLUSION: Represents an exclusion operation.\n\n - OPERATION_UNSPECIFIED: Default, unspecified operation.\n - OPERATION_UNION: Represents a union operation.\n - OPERATION_INTERSECTION: Represents an intersection operation.\n - OPERATION_EXCLUSION: Represents an exclusion operation."
+      "description": "Operation enum includes potential rewrite operations.\nOPERATION_UNION: Represents a union operation.\nOPERATION_INTERSECTION: Represents an intersection operation.\nOPERATION_EXCLUSION: Represents an exclusion operation.\n\n - OPERATION_UNION: Represents a union operation.\n - OPERATION_INTERSECTION: Represents an intersection operation.\n - OPERATION_EXCLUSION: Represents an exclusion operation."
     },
     "RuleDefinition": {
       "type": "object",
@@ -3076,12 +3056,10 @@
     "SchemaDefinition.Reference": {
       "type": "string",
       "enum": [
-        "REFERENCE_UNSPECIFIED",
         "REFERENCE_ENTITY",
         "REFERENCE_RULE"
       ],
-      "default": "REFERENCE_UNSPECIFIED",
-      "description": "The Reference enum helps distinguish whether a name corresponds to an entity or a rule.\n\n - REFERENCE_UNSPECIFIED: Default, unspecified reference.\n - REFERENCE_ENTITY: Indicates that the name refers to an entity.\n - REFERENCE_RULE: Indicates that the name refers to a rule."
+      "description": "The Reference enum helps distinguish whether a name corresponds to an entity or a rule.\n\n - REFERENCE_ENTITY: Indicates that the name refers to an entity.\n - REFERENCE_RULE: Indicates that the name refers to a rule."
     },
     "SchemaList": {
       "type": "object",
@@ -3523,13 +3501,11 @@
     "WellKnownType": {
       "type": "string",
       "enum": [
-        "WELL_KNOWN_TYPE_UNSPECIFIED",
         "ANY",
         "TIMESTAMP",
         "DURATION"
       ],
-      "default": "WELL_KNOWN_TYPE_UNSPECIFIED",
-      "description": "Well-known protobuf types treated with first-class support in CEL.\n\n - WELL_KNOWN_TYPE_UNSPECIFIED: Unspecified type.\n - ANY: Well-known protobuf.Any type.\n\nAny types are a polymorphic message type. During type-checking they are\ntreated like `DYN` types, but at runtime they are resolved to a specific\nmessage type specified at evaluation time.\n - TIMESTAMP: Well-known protobuf.Timestamp type, internally referenced as `timestamp`.\n - DURATION: Well-known protobuf.Duration type, internally referenced as `duration`."
+      "description": "Well-known protobuf types treated with first-class support in CEL.\n\n - ANY: Well-known protobuf.Any type.\n\nAny types are a polymorphic message type. During type-checking they are\ntreated like `DYN` types, but at runtime they are resolved to a specific\nmessage type specified at evaluation time.\n - TIMESTAMP: Well-known protobuf.Timestamp type, internally referenced as `timestamp`.\n - DURATION: Well-known protobuf.Duration type, internally referenced as `duration`."
     },
     "WriteRelationshipsBody": {
       "type": "object",
