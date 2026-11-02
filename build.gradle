@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'co.permify'
-version = '1.7.2'
+version = '1.7.5'
 
 repositories {
     mavenCentral()
